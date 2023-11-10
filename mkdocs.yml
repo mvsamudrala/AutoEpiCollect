@@ -1,4 +1,4 @@
 site_name: AutoEpiCollect
 repo_url: https://github.com/mvsamudrala/AutoEpiCollect
 nav:
-  - Introduction: 'docs/intro.md'
+  - Home: 'intro.md'
