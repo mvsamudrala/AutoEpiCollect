@@ -1,0 +1,41 @@
+attrs==23.1.0
+biopython @ file:///Users/ktietz/ci_310/biopython_1643969870628/work
+Bottleneck @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_07078715-3ab7-4562-8d3d-d56b0eaa0f7dp504n_ny/croots/recipe/bottleneck_1657175566567/work
+Brotli @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_38mvgltu8c/croots/recipe/brotli-split_1659616064542/work
+certifi==2023.7.22
+contourpy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_97c8ctlp86/croots/recipe/contourpy_1663827422071/work
+cycler @ file:///tmp/build/80754af9/cycler_1637851556182/work
+et-xmlfile==1.1.0
+exceptiongroup==1.1.3
+fonttools==4.25.0
+h11==0.14.0
+idna==3.4
+joblib @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_a357ltg47g/croot/joblib_1685113093574/work
+kiwisolver @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_93o8te804v/croot/kiwisolver_1672387163224/work
+matplotlib @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_21m9ylm_7k/croot/matplotlib-suite_1698692123710/work
+munkres==1.1.4
+numexpr @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_76yyu1p9jk/croot/numexpr_1683221830860/work
+numpy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_362zs5g963/croot/numpy_and_numpy_base_1695830450707/work/dist/numpy-1.26.0-cp310-cp310-macosx_11_0_arm64.whl#sha256=241678002b22c060cc5680abb413af33efab2fa2324d102e6babd0ef756a06cb
+openpyxl==3.0.10
+outcome==1.2.0
+packaging @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_6dm6d4jd_t/croot/packaging_1693575176524/work
+pandas==1.5.3
+Pillow @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_ccx0_h9rkg/croot/pillow_1696580032390/work
+pyparsing @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_3b_3vxnd07/croots/recipe/pyparsing_1661452540919/work
+PyQt5==5.15.9
+PyQt5-sip==12.12.2
+PySocks @ file:///Users/ktietz/ci_310/pysocks_1643961536721/work
+python-dateutil @ file:///tmp/build/80754af9/python-dateutil_1626374649649/work
+pytz @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_6btwyyj8a1/croot/pytz_1695131592184/work
+scikit-learn @ file:///private/var/folders/k1/30mswbxs7r1g6zwn8y4fyt500000gp/T/abs_75x_mwrnoj/croot/scikit-learn_1690978919744/work
+scipy @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_66h0hq6x34/croot/scipy_1691606685645/work/dist/scipy-1.11.1-cp310-cp310-macosx_11_0_arm64.whl#sha256=8e7cb95e568405877bb13a5700ef7a9fc939fff6851cf087d9a7e1161afbde17
+selenium==4.11.2
+six @ file:///tmp/build/80754af9/six_1644875935023/work
+sniffio==1.3.0
+sortedcontainers==2.4.0
+threadpoolctl @ file:///Users/ktietz/demo/mc3/conda-bld/threadpoolctl_1629802263681/work
+tornado @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_3a5nrn2jeh/croot/tornado_1696936974091/work
+trio==0.22.2
+trio-websocket==0.10.3
+urllib3 @ file:///private/var/folders/nz/j6p8yfhx1mv_0grj5xl4650h0000gp/T/abs_f56r2ox7qh/croot/urllib3_1688592651265/work
+wsproto==1.2.0
