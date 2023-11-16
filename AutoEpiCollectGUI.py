@@ -1,9 +1,11 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyleFactory
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QTimer
 import subprocess
 import pandas as pd
+import numpy as np
 import os
+from pathlib import Path
 import openpyxl
 from io import StringIO
 from Bio import SeqIO
@@ -16,7 +18,9 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import ChromeOptions
-from sklearn import linear_model
+from sklearn.linear_model import LogisticRegression
+from sklearn.model_selection import KFold
+from sklearn.model_selection import cross_val_score
 from functools import partial
 
 
@@ -62,13 +66,17 @@ def get_gene_sequence(target_gene):
 
     sleep(2)
 
-    download_button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[2]/div/div/button')
-    download_button.click()
+    download_button = driver.find_element(By.XPATH, '/html/body/div[1]/div[1]/div/div/main/div/div[2]/div/button[1]')
+    driver.execute_script("arguments[0].scrollIntoView();", download_button)
+    driver.execute_script("arguments[0].click();", download_button)
 
     sleep(0.5)
 
-    fasta_button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div/main/div/div[2]/div/div/div/ul/li[2]/a')
+    fasta_button = driver.find_element(By.XPATH, '/html/body/aside/div[2]/fieldset/label/select/option[2]')
     fasta_button.click()
+
+    download_button2 = driver.find_element(By.XPATH, '/html/body/aside/div[2]/section[1]/a')
+    download_button2.click()
 
     sleep(2)
 
@@ -86,7 +94,7 @@ def get_gene_sequence(target_gene):
 
 def make_mutant_genes(mutant_list, gene_seq, parent_dir):
     for m in mutant_list:
-        file_out = f"{parent_dir}/mutant_gene_fastas/{m}.fasta"
+        file_out = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
         os.makedirs(os.path.dirname(file_out), exist_ok=True)
         with open(file_out, "w") as f:
             for seq_record in SeqIO.parse(open(gene_seq, mode='r'), 'fasta'):
@@ -97,7 +105,6 @@ def make_mutant_genes(mutant_list, gene_seq, parent_dir):
                 loc = int(loc) - 1
                 new_seq = wild_type[:loc] + new + wild_type[loc + 1:]
                 mutant_seq = SeqRecord(seq=new_seq, id=seq_record.id, description=seq_record.description)
-                # write new fasta file
                 r = SeqIO.write(mutant_seq, f, 'fasta')
                 if r != 1:
                     print('Error while writing sequence:  ' + seq_record.id)
@@ -109,7 +116,7 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
         for m in mutant_list:
             sequence = ""
             epitope_lengths = ""
-            fasta_file = f"{parent_dir}/mutant_gene_fastas/{m}.fasta"
+            fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = str(seq_record.seq)
                 with open("MHCI_HLA_input.txt", "r") as h:
@@ -145,7 +152,7 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
         for m in mutant_list:
             sequence = ""
             epitope_lengths = ""
-            fasta_file = f"{parent_dir}/mutant_gene_fastas/{m}.fasta"
+            fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = str(seq_record.seq)
                 with open("MHCII_HLA_input.txt", "r") as h:
@@ -185,7 +192,7 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
     if mhc == "I":
         epitopes_dict = {}
         for m in mutant_list:
-            fasta_file = f"{parent_dir}/mutant_gene_fastas/{m}.fasta"
+            fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             df = all_epitopes_dict[m].copy()
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = seq_record.seq
@@ -205,7 +212,7 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
     else:
         epitopes_dict = {}
         for m in mutant_list:
-            fasta_file = f"{parent_dir}/mutant_gene_fastas/{m}.fasta"
+            fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             df = all_epitopes_dict[m].copy()
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = seq_record.seq
@@ -238,7 +245,7 @@ def get_peptides(point_mutants, mut_epitopes_dict, mhc, parent_dir):
         with open(file_out, "w") as f_out:
             for pep in peptide_set:
                 f_out.write(pep + "\n")
-        file_out = f"{parent_dir}/Sequences/{m}peptides_{mhc}.fasta"
+        file_out = parent_dir / "Sequences" / f"{m}peptides_{mhc}.fasta"
         os.makedirs(os.path.dirname(file_out), exist_ok=True)
         with open(file_out, "w") as f_out:
             count = 0
@@ -265,8 +272,11 @@ def get_local_immunogenicity_mhci(immunogenicity_file, peptide_file, current_df)
 def get_immunogenicity_mhcii(peptide_list, p, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome()
     driver.get('http://tools.iedb.org/CD4episcore/')
+
+    elem = WebDriverWait(driver, 60).until(
+        ec.presence_of_element_located((By.XPATH, '/html/body/div[3]/form/table/tbody/tr[3]/td[2]/textarea')))
 
     searchbox = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody/tr[3]/td[2]/textarea')
     searchbox.send_keys(p)
@@ -300,7 +310,7 @@ def get_antigenicity(peptide_list, peptide_fasta, current_df):
     driver.get('http://www.ddg-pharmfac.net/vaxijen/VaxiJen/VaxiJen.html')
 
     file_box = driver.find_element(By.XPATH, '//input[@type="FILE"]')
-    file_box.send_keys(peptide_fasta)
+    file_box.send_keys(str(peptide_fasta))
 
     organism_button = driver.find_element(By.XPATH, '/html/body/div/table/tbody/tr[4]/td[3]/form/table/tbody/tr[2]/td[2]/p/select/option[3]')
     organism_button.click()
@@ -363,13 +373,16 @@ def get_allergenicity_netallergen(peptide_list, pf, current_df):
 
     sleep(3)
 
-    text_box = driver.find_element(By.XPATH, '/html/body/div[3]/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
+    text_box = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
     driver.execute_script("arguments[0].scrollIntoView();", text_box)
     text_box.send_keys(input_fasta)
 
     sleep(1)
 
-    submit_button = driver.find_element(By.XPATH, '/html/body/div[3]/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
+    blast_button = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[4]/td/input')
+    driver.execute_script("arguments[0].click();", blast_button)
+
+    submit_button = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
     driver.execute_script("arguments[0].click();", submit_button)
 
     elem = WebDriverWait(driver, 10000).until(ec.presence_of_element_located((By.XPATH, '/html/body/font/table/tbody/tr/td[3]/h2')))
@@ -381,7 +394,7 @@ def get_allergenicity_netallergen(peptide_list, pf, current_df):
 
     count = 0
     for pep in peptide_list:
-        result = df["Prediction"][count]
+        result = df["Score_60F"][count]
         current_df.loc[current_df["peptide"] == pep, "allergenicity"] = float(result)
         count += 1
     return current_df
@@ -480,73 +493,67 @@ def normalize_data(df_collected_epitopes, mhc):
     immunogenicity_name = "immunogenicity"
     antigenicity_name = "antigenicity"
     allergenicity_name = "allergenicity"
-    binding_affinity_name = "binding affinity (nM)"
     immunogenicity_mean = df_collected_epitopes[immunogenicity_name].mean()
     immunogenicity_std = df_collected_epitopes[immunogenicity_name].std()
     antigenicity_mean = df_collected_epitopes[antigenicity_name].mean()
     antigenicity_std = df_collected_epitopes[antigenicity_name].std()
     allergenicity_mean = df_collected_epitopes[allergenicity_name].mean()
     allergenicity_std = df_collected_epitopes[allergenicity_name].std()
-    ba_mean = df_collected_epitopes[binding_affinity_name].mean()
-    ba_std = df_collected_epitopes[binding_affinity_name].std()
     for i in range(df_collected_epitopes.shape[0]):
         immunogenicity_value = df_collected_epitopes[immunogenicity_name][i]
         antigenicity_value = df_collected_epitopes[antigenicity_name][i]
         allergenicity_value = df_collected_epitopes[allergenicity_name][i]
-        ba_value = df_collected_epitopes[binding_affinity_name][i]
         new_immunogenicity_value = (immunogenicity_value - immunogenicity_mean) / immunogenicity_std
         new_antigenicity_value = (antigenicity_value - antigenicity_mean) / antigenicity_std
         new_allergenicity_value = (allergenicity_value - allergenicity_mean) / allergenicity_std
-        new_ba_value = (ba_value - ba_mean) / ba_std
         df_collected_epitopes.at[i, "norm immunogenicity"] = new_immunogenicity_value
         df_collected_epitopes.at[i, "norm antigenicity"] = new_antigenicity_value
         df_collected_epitopes.at[i, "norm allergenicity"] = new_allergenicity_value
-        df_collected_epitopes.at[i, "norm binding affinity"] = new_ba_value
 
     immunogenicity_name = "norm immunogenicity"
     antigenicity_name = "norm antigenicity"
     allergenicity_name = "norm allergenicity"
-    binding_affinity_name = "norm binding affinity"
     immunogenicity_max = df_collected_epitopes[immunogenicity_name].max()
     immunogenicity_min = df_collected_epitopes[immunogenicity_name].min()
     antigenicity_max = df_collected_epitopes[antigenicity_name].max()
     antigenicity_min = df_collected_epitopes[antigenicity_name].min()
     allergenicity_max = df_collected_epitopes[allergenicity_name].max()
     allergenicity_min = df_collected_epitopes[allergenicity_name].min()
-    ba_max = df_collected_epitopes[binding_affinity_name].max()
-    ba_min = df_collected_epitopes[binding_affinity_name].min()
     for i in range(df_collected_epitopes.shape[0]):
         immunogenicity_value = df_collected_epitopes[immunogenicity_name][i]
         antigenicity_value = df_collected_epitopes[antigenicity_name][i]
         allergenicity_value = df_collected_epitopes[allergenicity_name][i]
-        ba_value = df_collected_epitopes[binding_affinity_name][i]
         if mhc == "I":
             new_immunogenicity_value = (immunogenicity_value - immunogenicity_min)/(immunogenicity_max - immunogenicity_min)
         else:
             new_immunogenicity_value = (immunogenicity_value - immunogenicity_max) / (immunogenicity_min - immunogenicity_max)
         new_antigenicity_value = (antigenicity_value - antigenicity_min)/(antigenicity_max - antigenicity_min)
         new_allergenicity_value = (allergenicity_value - allergenicity_max)/(allergenicity_min - allergenicity_max)
-        new_ba_value = (ba_value - ba_max) / (ba_min - ba_max)
         df_collected_epitopes.at[i, immunogenicity_name] = new_immunogenicity_value
         df_collected_epitopes.at[i, antigenicity_name] = new_antigenicity_value
         df_collected_epitopes.at[i, allergenicity_name] = new_allergenicity_value
-        df_collected_epitopes.at[i, binding_affinity_name] = new_ba_value
     return df_collected_epitopes
 
 
 def apply_scoring_function(df_normalized_epitopes, mhc):
     if mhc == "I":
-        training_df = pd.read_excel("CD8_training_set.xlsx")
+        training_df = pd.read_csv("refactored_trainingset_cd8.csv")
+        training_df["logBindingAffinity"] = np.log(training_df["Binding Affinity"])
+        X = training_df[["norm immunogenicity", "norm antigenicity", "norm allergenicity", "logBindingAffinity"]].values
+        y = training_df[["Result"]]
     else:
-        training_df = pd.read_excel("CD4_training_set.xlsx")
-    X = training_df[["norm immunogenicity", "norm antigenicity", "norm allergenicity", "norm binding affinity"]].values
-    y = training_df[["Potential"]]
-    regr = linear_model.LinearRegression()
-    regr.fit(X, y)
+        training_df = pd.read_csv("refactored_trainingset_cd4.csv")
+        training_df["logBindingAffinity"] = np.log(training_df["Binding Affinity"])
+        X = training_df[["norm immunogenicity", "norm antigenicity", "norm allergenicity", "logBindingAffinity"]].values
+        y = training_df[["Result"]]
+    logr = LogisticRegression()
+    logr.fit(X, y)
 
     for i in range(df_normalized_epitopes.shape[0]):
-        predicted_potential = regr.predict([[df_normalized_epitopes["norm immunogenicity"][i], df_normalized_epitopes["norm antigenicity"][i], df_normalized_epitopes["norm allergenicity"][i], df_normalized_epitopes["norm binding affinity"][i]]])
-        df_normalized_epitopes.at[i, "potential"] = predicted_potential
+        df_normalized_epitopes["log binding affinity"] = np.log(df_normalized_epitopes["binding affinity (nM)"])
+        df_x = df_normalized_epitopes[["norm immunogenicity", "norm antigenicity", "norm allergenicity", "log binding affinity"]].values
+        predicted_potential = logr.predict_proba(df_x)[:, 1]
+        df_normalized_epitopes["potential"] = predicted_potential
     df_normalized_epitopes_ranked = df_normalized_epitopes.sort_values(by=["potential"], ascending=False)
     return df_normalized_epitopes_ranked
 
@@ -683,6 +690,7 @@ def population_coverage_helper(pop_filename, reg, mhc, pep_filename, plot_folder
         ["python", pop_filename, "-p", reg, "-c", mhc, "-f", pep_filename, "--plot", plot_folder], capture_output=True,
         text=True)
     output = completed_run.stdout
+    print(output)
     output = output[output.find("World"):]
     output_list = output.split("\n")
     output_list = output_list[:19]
@@ -719,12 +727,12 @@ def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, c,
         with open(optimized_peptide_allele_filename, "w") as fo:
             for line in optimized_epitopes_txt:
                 fo.write(f"{line}\n")
-    new_dir = f"{parent_dir}/Population_Coverage_Plots"
+    new_dir = Path(f"{parent_dir}/Population_Coverage_Plots/")
     os.makedirs(new_dir, exist_ok=True)
-    pop_coverage_filename = f"{parent_dir}/population_coverage/calculate_population_coverage.py"
-    plot_output_folder = f"{new_dir}/Regular_Plots_{c}"
+    pop_coverage_filename = parent_dir / "population_coverage" / "calculate_population_coverage.py"
+    plot_output_folder = new_dir / f"Regular_Plots_{c}"
     os.makedirs(plot_output_folder, exist_ok=True)
-    optimized_plot_output_folder = f"{new_dir}/Optimized_Plots_{c}"
+    optimized_plot_output_folder = new_dir / f"Optimized_Plots_{c}"
     os.makedirs(optimized_plot_output_folder, exist_ok=True)
     regions = ["World", "East Asia", "Northeast Asia", "South Asia", "Southeast Asia", "Southwest Asia", "Europe",
                "East Africa", "West Africa", "Central Africa", "North Africa", "South Africa", "West Indies",
@@ -753,7 +761,7 @@ class Worker(QThread):
         self.is_running = True
         self.ready_to_start = False
         start = time.time()
-        parent_dir = os.getcwd()
+        parent_dir = Path(os.getcwd())
         print(parent_dir)
         self.update_signal.emit(f"{parent_dir}\n")
         gene_target = gene
@@ -847,7 +855,7 @@ class Worker(QThread):
             get_peptides(all_mutations, mutant_gene_mut_epitopes_dict, mhc_class, parent_dir)
             print("Done generating all peptide sequences")
             self.update_signal.emit(f"Done generating all peptide sequences\n")
-            immunogenicity_file = f"{parent_dir}/immunogenicity/predict_immunogenicity.py"
+            immunogenicity_file = parent_dir / "immunogenicity" / "predict_immunogenicity.py"
             if mhc_class == "I":
                 if existing == "":
                     final_out = "all_variables_mhci.xlsx"
@@ -880,10 +888,10 @@ class Worker(QThread):
                         print(f"Getting results for {pm}...")
                         self.update_signal.emit(f"Getting results for {pm}...\n")
                         current_df = mutant_gene_mut_epitopes_dict[pm].copy()
-                        peptide_fasta = f"{parent_dir}/Sequences/{pm}peptides_{mhc_class}.fasta"
+                        peptide_fasta = parent_dir / "Sequences" / f"{pm}peptides_{mhc_class}.fasta"
                         with open(peptide_fasta, "r") as f:
                             pf = f.read()
-                        peptide_file = f"{parent_dir}/Sequences/{pm}peptides_{mhc_class}.txt"
+                        peptide_file = parent_dir / "Sequences" / f"{pm}peptides_{mhc_class}.txt"
                         with open(peptide_file, "r") as fp:
                             peptides = [line.strip() for line in fp]
                         if i:
@@ -952,10 +960,10 @@ class Worker(QThread):
                         print(f"Getting results for {pm}...")
                         self.update_signal.emit(f"Getting results for {pm}...\n")
                         current_df = mutant_gene_mut_epitopes_dict[pm].copy()
-                        peptide_fasta = f"{parent_dir}/Sequences/{pm}peptides_{mhc_class}.fasta"
+                        peptide_fasta = parent_dir / "Sequences" / f"{pm}peptides_{mhc_class}.fasta"
                         with open(peptide_fasta, "r") as f:
                             pf = f.read()
-                        peptide_file = f"{parent_dir}/Sequences/{pm}peptides_{mhc_class}.txt"
+                        peptide_file = parent_dir / "Sequences" / f"{pm}peptides_{mhc_class}.txt"
                         with open(peptide_file, "r") as fp:
                             p = fp.read()
                         with open(peptide_file, "r") as fp:
@@ -1417,7 +1425,6 @@ class Ui_MainWindow(object):
         self.existing_data_button.clicked.connect(lambda: self.open_filebox(2))
         self.existing_data_2_button.clicked.connect(lambda: self.open_filebox(3))
 
-        ### Checkbox toggles
         self.immune_char_checkbox.stateChanged.connect(self.check_immune_characteristics)
         self.physicochem_checkbox.stateChanged.connect(self.check_physicochemical_properties)
         self.epistability_checkbox.stateChanged.connect(self.check_epitope_stability)
@@ -1445,10 +1452,8 @@ class Ui_MainWindow(object):
         self.data_filename_2 = ""
 
         self.worker = Worker()
-        # Move the worker to a separate thread
         self.worker_thread = QThread()
         self.worker.moveToThread(self.worker_thread)
-        # Connect signals to update the GUI
         self.worker.update_signal.connect(self.write_to_textbox)
 
     def check_immune_characteristics(self):
@@ -1599,7 +1604,6 @@ class Ui_MainWindow(object):
         filtering = self.filter_checkbox.isChecked()
         scoring_function = self.scoring_checkbox.isChecked()
         population_coverage = self.pop_cov_checkbox.isChecked()
-        path = "/Users/mvsamudrala/CancerVaccine/Peptides/epitopes/Automated_Collection/AutoEpiCollect.py"
         gene = self.gene_box.text()
         mutations = self.cancer_pm_box.toPlainText()
         if gene == "" and mutations == "" and self.gene_file == "" and self.mhc_combo.currentText() == "-- Choose MHC Class":
@@ -1633,7 +1637,6 @@ class Ui_MainWindow(object):
                                                   allergenicity, aliphatic, gravy, isoelectric, half_life,
                                                   instability, toxicity, ifn, filtering, scoring_function,
                                                   population_coverage, mhc)
-                    ### Create push buttons to terminate AutoEpiCollect backend and open final excel spreadsheets
             elif self.starting_combo.currentText() == "Update Existing Data":
                 if (self.existing_data == "" or ".xlsx" not in self.data_filename) and (
                         self.existing_data_2 == "" or ".xlsx" not in self.data_filename_2):
@@ -1734,8 +1737,6 @@ class Ui_MainWindow(object):
 
     def back_home_auto_epi_collect(self):
         self.stackedWidget.setCurrentWidget(self.options_page)
-        # if self.worker.check_output:
-        #     self.output_textbox.clear()
 
     def run_auto_epi_collect(self, gene, gene_file, existing_data, existing_data2, mut, i, an, al, ali, g, iso, h, ins,
                              t, ifn,
@@ -1747,7 +1748,6 @@ class Ui_MainWindow(object):
             self.worker = Worker()
             self.worker_thread = QThread()
             self.worker.moveToThread(self.worker_thread)
-            # Connect signals to update the GUI
             self.worker.update_signal.connect(self.write_to_textbox)
         self.worker_thread.started.connect(
             partial(self.worker.auto_epi_collect, gene, gene_file, existing_data, existing_data2, mut, i, an, al, ali,
@@ -1807,6 +1807,8 @@ class Ui_MainWindow(object):
 if __name__ == "__main__":
     import sys
     app = QtWidgets.QApplication(sys.argv)
+    # app.setStyle(QStyleFactory.create("Fusion"))
+    # app.setStyle(QStyleFactory.create("Windows"))
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
