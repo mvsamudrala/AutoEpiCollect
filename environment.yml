@@ -1,31 +1,43 @@
+# This file may be used to create an environment using:
+# $ conda create --name <env> --file <this file>
+# platform: osx-arm64
 name: aec_venv
 channels:
   - defaults
 dependencies:
+  - ca-certificates=2023.08.22
+  - libcxx=14.0.6
+  - libffi=3.4.4
+  - ncurses=6.4
+  - openssl=3.0.12
   - python=3.8
-  - ca-certificates
-  - libcxx
-  - libffi
-  - ncurses
-  - openssl
-  - readline
-  - setuptools
-  - sqlite
-  - tk
-  - wheel
-  - xz
-  - zlib
+  - readline=8.2
+  - setuptools=68.0.0
+  - sqlite=3.41.2
+  - tk=8.6.12
+  - wheel=0.41.2
+  - xz=5.4.2
+  - zlib=1.2.13
   - biopython=1.78
-  - matplotlib
+  - pandas
   - numpy
   - openpyxl
-  - pandas
-  - scikit-learn=1.3.0
   - scipy
+  - matplotlib
+  - scikit-learn=1.3.0
   - pip
-  -
   - pip:
-      - pyqt5==5.15.9
-      - pyqt5-sip==12.12.2
-      - selenium==4.11.2
-
+      - - attrs==23.1.0
+        - certifi==2023.7.22
+        - exceptiongroup==1.1.3
+        - h11==0.14.0
+        - idna==3.4
+        - outcome==1.2.0
+        - pyqt5==5.15.9
+        - pyqt5-sip==12.12.2
+        - selenium==4.11.2
+        - sniffio==1.3.0
+        - sortedcontainers==2.4.0
+        - trio==0.22.2
+        - trio-websocket==0.10.3
+        - wsproto==1.2.0
