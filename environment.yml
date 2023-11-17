@@ -25,7 +25,6 @@ dependencies:
   - scipy
   - matplotlib
   - scikit-learn=1.3.0
-  - pyqt5-sip=12.13.0
   - pip
   - pip:
       - pyqt5==5.15.10
