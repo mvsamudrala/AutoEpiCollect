@@ -5,19 +5,19 @@ name: aec_venv
 channels:
   - defaults
 dependencies:
-  - ca-certificates=2023.08.22
-  - libcxx=14.0.6
-  - libffi=3.4.4
-  - ncurses=6.4
-  - openssl=3.0.12
+  - ca-certificates
+  - libcxx
+  - libffi
+  - ncurses
+  - openssl
   - python=3.8
-  - readline=8.2
-  - setuptools=68.0.0
-  - sqlite=3.41.2
-  - tk=8.6.12
-  - wheel=0.41.2
-  - xz=5.4.2
-  - zlib=1.2.13
+  - readline
+  - setuptools
+  - sqlite
+  - tk
+  - wheel
+  - xz
+  - zlib
   - biopython=1.78
   - pandas
   - numpy
