@@ -30,8 +30,8 @@ installed (if not installed, this means you must download Miniconda). Run the fo
 ```bash
 conda search python
 ```
-If a list of Python versions >=3.8.0 are shown, you may skip the rest of the Miniconda installation and 
-proceed to the git installation process.
+If a list of Python versions >=3.8.0 appear, you may skip the rest of the Miniconda installation and 
+proceed to the [git installation process](#git).
 
 ### Linux
 To install Miniconda on Linus, run the following commands in Terminal::
@@ -55,6 +55,7 @@ del miniconda.exe
 ### macOS
 To install Miniconda on macOS, run the following commands in Terminal::
 ```bash
+cd ~
 mkdir -p ~/miniconda3
 curl https://repo.anaconda.com/miniconda/Miniconda3-latest-MacOSX-arm64.sh -o ~/miniconda3/miniconda.sh
 bash ~/miniconda3/miniconda.sh -b -u -p ~/miniconda3
@@ -62,5 +63,21 @@ rm -rf ~/miniconda3/miniconda.sh
 ~/miniconda3/bin/conda init bash
 ~/miniconda3/bin/conda init zsh
 ```
-**Note: These commands install the latest Miniconda compatible with arm64 or Apple Silicon M1/M2. If 
-you have an older architecture,**
+**Note: These commands install the latest Miniconda compatible with 64-bit Linux and Windows systems, as well 
+as Apple Silicon M1/M2. If you have an older architecture, go to the [Miniconda installation](https://docs.conda.io/projects/miniconda/en/latest/miniconda-other-installer-links.html)
+website, download the Python 3.x installer compatible with your system, open the downloaded file, and follow the 
+instructions to finish the Miniconda installation.**
+
+## Git
+Git is a version control system that tracks changes in computer files, mainly source code. AutoEpiCollect is hosted 
+on GitHub, a platform that stores Git repositories. Installing Git will allow you to easily download the most 
+up-to-date files needed to successfully run AutoEpiCollect from Terminal or Command Prompt. First, check if you 
+already have Git installed on your system by running the following command in your Terminal or Command Prompt::
+```bash
+git --version
+```
+If the Git version number appears, then you can move on to the 
+[AutoEpiCollect installation process](#install-autoepicollect). If not, then please navigate to the [Git downloads 
+website](https://git-scm.com/downloads) and follow the instructions to complete the installation process.
+
+## Install AutoEpiCollect
