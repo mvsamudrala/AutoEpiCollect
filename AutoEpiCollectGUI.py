@@ -704,10 +704,10 @@ def population_coverage_helper(pop_filename, reg, mhc, pep_filename, plot_folder
     return df
 
 
-def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, c, parent_dir):
+def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, parent_dir):
     if mhc == "I":
-        peptide_allele_filename = f"filtered_epitopes_{c}_mhci.txt"
-        optimized_peptide_allele_filename = f"optimized_epitopes_{c}_mhci.txt"
+        peptide_allele_filename = f"filtered_epitopes_mhci.txt"
+        optimized_peptide_allele_filename = f"optimized_epitopes_mhci.txt"
         filtered_epitopes_txt = convert_to_text(df_filtered_epitopes)
         with open(peptide_allele_filename, "w") as fo:
             for line in filtered_epitopes_txt:
@@ -717,8 +717,8 @@ def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, c,
             for line in optimized_epitopes_txt:
                 fo.write(f"{line}\n")
     else:
-        peptide_allele_filename = f"filtered_epitopes_{c}_mhcii.txt"
-        optimized_peptide_allele_filename = f"optimized_epitopes_{c}_mhcii.txt"
+        peptide_allele_filename = f"filtered_epitopes_mhcii.txt"
+        optimized_peptide_allele_filename = f"optimized_epitopes_mhcii.txt"
         filtered_epitopes_txt = convert_to_text(df_filtered_epitopes)
         with open(peptide_allele_filename, "w") as fo:
             for line in filtered_epitopes_txt:
@@ -730,9 +730,9 @@ def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, c,
     new_dir = Path(f"{parent_dir}/Population_Coverage_Plots/")
     os.makedirs(new_dir, exist_ok=True)
     pop_coverage_filename = parent_dir / "population_coverage" / "calculate_population_coverage.py"
-    plot_output_folder = new_dir / f"Regular_Plots_{c}"
+    plot_output_folder = new_dir / f"Regular_Plots"
     os.makedirs(plot_output_folder, exist_ok=True)
-    optimized_plot_output_folder = new_dir / f"Optimized_Plots_{c}"
+    optimized_plot_output_folder = new_dir / f"Optimized_Plots"
     os.makedirs(optimized_plot_output_folder, exist_ok=True)
     regions = ["World", "East Asia", "Northeast Asia", "South Asia", "Southeast Asia", "Southwest Asia", "Europe",
                "East Africa", "West Africa", "Central Africa", "North Africa", "South Africa", "West Indies",
@@ -1162,65 +1162,54 @@ class Worker(QThread):
                 self.update_signal.emit(f"Obtaining MHC Class {mhc_class} population coverage results...\n")
                 if mhc_class == "I":
                     if existing == "":
-                        top_op_epitopes_out = "optimized_epitopes_by_cancer_mhci.xlsx"
+                        top_op_epitopes_out = "optimized_epitopes_mhci.xlsx"
                     else:
-                        top_op_epitopes_out = "optimized_epitopes_by_cancer_mhci_updated.xlsx"
+                        top_op_epitopes_out = "optimized_epitopes_mhci_updated.xlsx"
                 else:
                     if existing2 == "":
-                        top_op_epitopes_out = "optimized_epitopes_by_cancer_mhcii.xlsx"
+                        top_op_epitopes_out = "optimized_epitopes_mhcii.xlsx"
                     else:
-                        top_op_epitopes_out = "optimized_epitopes_by_cancer_mhcii_updated.xlsx"
+                        top_op_epitopes_out = "optimized_epitopes_mhcii_updated.xlsx"
+                print(f"Optimizing epitopes...")
+                self.update_signal.emit(f"Optimizing epitopes...\n")
                 with pd.ExcelWriter(top_op_epitopes_out, engine='openpyxl') as w:
+                    sum_filtered_epitopes_df = pd.DataFrame()
                     for cancer in cancers:
-                        print(f"Optimizing epitopes for {cancer}...")
-                        self.update_signal.emit(f"Optimizing epitopes for {cancer}...\n")
-                        sum_filtered_epitopes_df = pop_cov_dict[cancer]
-                        if sum_filtered_epitopes_df.empty:
-                            print(
-                                f"No filtered MHC Class {mhc_class} epitopes for {cancer}")
-                            self.update_signal.emit(f"No filtered MHC Class {mhc_class} epitopes for {cancer}\n")
-                            optimized_df = get_optimized_epitopes(sum_filtered_epitopes_df, mhc_class)
-                            optimized_pop_cov_dict[cancer] = optimized_df
-                            optimized_df.to_excel(w, header=True, index=False, sheet_name=cancer)
-                        else:
-                            optimized_df = get_optimized_epitopes(sum_filtered_epitopes_df, mhc_class)
-                            optimized_pop_cov_dict[cancer] = optimized_df
-                            optimized_df.to_excel(w, header=True, index=False, sheet_name=cancer)
-                            print(f"Done optimizing epitopes for {cancer}")
-                            self.update_signal.emit(f"Done optimizing epitopes for {cancer}\n")
-                print("Done optimizing epitopes for all cancers")
-                self.update_signal.emit(f"Done optimizing epitopes for all cancers\n")
+                        sum_filtered_epitopes_df = pd.concat([sum_filtered_epitopes_df, pop_cov_dict[cancer]], axis=0)
+                    if sum_filtered_epitopes_df.empty:
+                        print(
+                            f"No filtered MHC Class {mhc_class} epitopes")
+                    else:
+                        optimized_df = get_optimized_epitopes(sum_filtered_epitopes_df, mhc_class)
+                        optimized_df.to_excel(w, header=True, index=False)
+                print("Done optimizing epitopes")
+                self.update_signal.emit(f"Done optimizing epitopes\n")
 
                 if mhc_class == "I":
                     if existing == "":
-                        population_coverage_out = "population_results_by_cancer_mhci.xlsx"
+                        population_coverage_out = "population_coverage_results_mhci.xlsx"
                     else:
-                        population_coverage_out = "population_results_by_cancer_mhci_updated.xlsx"
+                        population_coverage_out = "population_coverage_results_mhci_updated.xlsx"
                 else:
                     if existing2 == "":
-                        population_coverage_out = "population_results_by_cancer_mhcii.xlsx"
+                        population_coverage_out = "population_coverage_results_mhcii.xlsx"
                     else:
-                        population_coverage_out = "population_results_by_cancer_mhcii_updated.xlsx"
+                        population_coverage_out = "population_coverage_results_mhcii_updated.xlsx"
                 with pd.ExcelWriter(population_coverage_out, engine='openpyxl') as w:
-                    for cancer in cancers:
-                        sum_filtered_epitopes_df = pop_cov_dict[cancer]
-                        if not sum_filtered_epitopes_df.empty:
-                            print(f"Obtaining population coverage for {cancer}...")
-                            self.update_signal.emit(f"Obtaining population coverage for {cancer}...\n")
-                            optimized_df = optimized_pop_cov_dict[cancer]
-                            regular_population_coverage, optimized_population_coverage = get_population_coverage(
-                                sum_filtered_epitopes_df, optimized_df, mhc_class, cancer, parent_dir)
-                            regular_population_coverage.to_excel(w, header=True, index=False, sheet_name=cancer)
-                            optimized_population_coverage.to_excel(w, header=True, index=False, sheet_name=cancer,
-                                                                   startcol=regular_population_coverage.shape[1] + 1,
-                                                                   startrow=0)
-                            print(f"Done obtaining population coverage for {cancer}")
-                            self.update_signal.emit(f"Done obtaining population coverage for {cancer}\n")
-                        else:
-                            no_result_df = pd.DataFrame(columns=["No Population Coverage Results"])
-                            no_result_df.to_excel(w, header=True, index=False, sheet_name=cancer)
-                print(f"Done obtaining MHC Class {mhc_class} population coverage results for all cancers")
-                self.update_signal.emit(f"Done obtaining MHC Class {mhc_class} population coverage results for all cancers\n")
+                    if not sum_filtered_epitopes_df.empty:
+                        print(f"Obtaining population coverage...")
+                        self.update_signal.emit(f"Obtaining population coverage...\n")
+                        regular_population_coverage, optimized_population_coverage = get_population_coverage(
+                            sum_filtered_epitopes_df, optimized_df, mhc_class, parent_dir)
+                        regular_population_coverage.to_excel(w, header=True, index=False)
+                        optimized_population_coverage.to_excel(w, header=True, index=False,
+                                                               startcol=regular_population_coverage.shape[1] + 1,
+                                                               startrow=0)
+                    else:
+                        no_result_df = pd.DataFrame(columns=["No Population Coverage Results"])
+                        no_result_df.to_excel(w, header=True, index=False)
+                print(f"Done obtaining MHC Class {mhc_class} population coverage results")
+                self.update_signal.emit(f"Done obtaining MHC Class {mhc_class} population coverage results\n")
         end = time.time()
         print(
             f"AutoEpiCollect complete in {end - start} seconds, please click the button to the right to see your epitopes for each mutation")
