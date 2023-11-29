@@ -81,3 +81,28 @@ If the Git version number appears, then you can move on to the
 website](https://git-scm.com/downloads) and follow the instructions to complete the installation process.
 
 ## Install AutoEpiCollect
+To install AutoEpiCollect, you will need to copy all the necessary files from AutoEpiCollect's GitHub repository. 
+Then, you must enter AutoEpiCollect's directory to access all the main files and programs. Enter the commands 
+below in Terminal or Anaconda Prompt (on Windows) to gain access to AutoEpiCollect's directory::
+```bash
+git clone "https://github.com/mvsamudrala/AutoEpiCollect"
+cd AutoEpiCollect
+```
+As stated in the Miniconda section of the installation process, the use of a conda virtual environment to install 
+all the packages needed for AutoEpiCollect to run smoothly is highly recommended. Located in the AutoEpiCollect 
+directory is a .yml file that contains the necessary dependencies for creating a conda virtual environment 
+compatible with AutoEpiCollect. Follow the commands below to create and activate this virtual environment on 
+your machine::
+```bash
+conda env create -n aec_venv
+conda activate aec_venv
+```
+**Note: Creating the virtual environment might take some time depending on your machine. Please be prepared to wait 
+up to 30 minutes after entering the first command for all the required dependencies to be installed.**
+
+If you wish to switch back to your default environment, run this command to deactivate the existing virtual 
+environment::
+```bash
+conda deactivate
+```
+## Testing AutoEpiCollect
