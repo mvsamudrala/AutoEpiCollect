@@ -33,8 +33,9 @@ conda search python
 If a list of Python versions >=3.8.0 appear, you may skip the rest of the Miniconda installation and 
 proceed to the [git installation process](#git).
 
+
 ### Linux
-To install Miniconda on Linus, run the following commands in Terminal::
+To install Miniconda on Linux, run the following commands in Terminal::
 ```bash
 cd ~
 mkdir -p ~/miniconda3
@@ -64,7 +65,8 @@ rm -rf ~/miniconda3/miniconda.sh
 ~/miniconda3/bin/conda init zsh
 ```
 **Note: These commands install the latest Miniconda compatible with 64-bit Linux and Windows systems, as well 
-as Apple Silicon M1/M2. If you have an older architecture, go to the [Miniconda installation](https://docs.conda.io/projects/miniconda/en/latest/miniconda-other-installer-links.html)
+as Apple Silicon M1/M2. If you have an older architecture or the commands above are not working properly, please go 
+to the [Miniconda installation](https://docs.conda.io/projects/miniconda/en/latest/miniconda-other-installer-links.html)
 website, download the Python 3.x installer compatible with your system, open the downloaded file, and follow the 
 instructions to finish the Miniconda installation.**
 
@@ -81,9 +83,15 @@ If the Git version number appears, then you can move on to the
 website](https://git-scm.com/downloads) and follow the instructions to complete the installation process.
 
 ## Install AutoEpiCollect
+**Note: For Windows users. Anaconda Prompt is a shell program similar to Command Prompt that gives users access to 
+command line input. Anaconda Prompt comes with the Miniconda installation and is necessary for running Git commands 
+and creating your virtual environments. For the next steps of installing AutoEpiCollect and running the program, 
+please use the Anaconda Prompt shell found by searching "miniconda3" in your start menu and clicking the Anaconda 
+Prompt program.**
+
 To install AutoEpiCollect, you will need to copy all the necessary files from AutoEpiCollect's GitHub repository. 
-Then, you must enter AutoEpiCollect's directory to access all the main files and programs. Enter the commands 
-below in Terminal or Anaconda Prompt (on Windows) to gain access to AutoEpiCollect's directory::
+Then, you must enter AutoEpiCollect's directory to access all the main files and programs. Enter the 
+commands below in Terminal or Anaconda Prompt (on Windows) to gain access to AutoEpiCollect's directory::
 ```bash
 git clone "https://github.com/mvsamudrala/AutoEpiCollect"
 cd AutoEpiCollect
@@ -106,3 +114,7 @@ environment::
 conda deactivate
 ```
 ## Testing AutoEpiCollect
+To run the GUI program, enter the following command while the aec_venv environment is running::
+```bash
+python AutoEpiCollectGUI.py
+```
