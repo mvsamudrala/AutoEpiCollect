@@ -81,6 +81,7 @@ git --version
 If the Git version number appears, then you can move on to the 
 [AutoEpiCollect installation process](#install-autoepicollect). If not, then please navigate to the [Git downloads 
 website](https://git-scm.com/downloads) and follow the instructions to complete the installation process.
+## ChromeDriver
 
 ## Install AutoEpiCollect
 **Note: For Windows users. Anaconda Prompt is a shell program similar to Command Prompt that gives users access to 
