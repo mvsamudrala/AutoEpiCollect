@@ -1,11 +1,13 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyleFactory
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QTimer
+from PyQt5.QtGui import QFont
 import subprocess
 import pandas as pd
 import numpy as np
 import os
 from pathlib import Path
+import platform
 import openpyxl
 from io import StringIO
 from Bio import SeqIO
@@ -32,7 +34,8 @@ def get_gene_sequence(target_gene):
 
     sleep(1)
 
-    search_box = driver.find_element(By.XPATH, '//input[@type="text"]')
+    search_box = driver.find_element(By.XPATH,
+                                     '/html/body/div[1]/div/div/main/div/div[1]/div/section/form/div[2]/input')
     search_box.send_keys(target_gene)
 
     sleep(1.5)
@@ -126,12 +129,14 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
 
             mhc_i = subprocess.run(["curl", "--data",
                                     f'method=netmhcpan_ba&sequence_text={sequence}&allele={alleles}&length={epitope_lengths}',
-                                    "http://tools-cluster-interface.iedb.org/tools_api/mhci/"], capture_output=True, text=True)
+                                    "http://tools-cluster-interface.iedb.org/tools_api/mhci/"], capture_output=True,
+                                   text=True)
             output = mhc_i.stdout
             table = StringIO(output)
             df = pd.read_table(table, sep=r"\s+")
             df = df.rename(columns={"ic50": "binding affinity (nM)"})
-            column_titles = ["allele", "seq_num", "start", "end", "length", "peptide", "core", "icore", "percentile_rank", "binding affinity (nM)"]
+            column_titles = ["allele", "seq_num", "start", "end", "length", "peptide", "core", "icore",
+                             "percentile_rank", "binding affinity (nM)"]
             df = df.reindex(columns=column_titles)
             for i in range(df.shape[0]):
                 affinity = float(df["binding affinity (nM)"][i])
@@ -161,9 +166,9 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
                 epitope_lengths = "15," * 26 + "15"
 
             mhc_ii = subprocess.run(["curl", "--data",
-                                    f'method=netmhciipan&sequence_text={sequence}&allele={alleles}&length={epitope_lengths}',
-                                    "http://tools-cluster-interface.iedb.org/tools_api/mhcii/"],
-                                   capture_output=True, text=True)
+                                     f'method=netmhciipan&sequence_text={sequence}&allele={alleles}&length={epitope_lengths}',
+                                     "http://tools-cluster-interface.iedb.org/tools_api/mhcii/"],
+                                    capture_output=True, text=True)
             output = mhc_ii.stdout
             table = StringIO(output)
             df = pd.read_table(table, sep=r"\s+")
@@ -312,17 +317,21 @@ def get_antigenicity(peptide_list, peptide_fasta, current_df):
     file_box = driver.find_element(By.XPATH, '//input[@type="FILE"]')
     file_box.send_keys(str(peptide_fasta))
 
-    organism_button = driver.find_element(By.XPATH, '/html/body/div/table/tbody/tr[4]/td[3]/form/table/tbody/tr[2]/td[2]/p/select/option[3]')
+    organism_button = driver.find_element(By.XPATH,
+                                          '/html/body/div/table/tbody/tr[4]/td[3]/form/table/tbody/tr[2]/td[2]/p/select/option[3]')
     organism_button.click()
 
-    submit_button = driver.find_elements(By.XPATH, '/html/body/div/table/tbody/tr[4]/td[3]/form/table/tbody/tr[3]/td[2]/input[1]')
+    submit_button = driver.find_elements(By.XPATH,
+                                         '/html/body/div/table/tbody/tr[4]/td[3]/form/table/tbody/tr[3]/td[2]/input[1]')
     submit_button[0].click()
 
     sleep(0.5)
 
     for x in range(len(peptide_list)):
-        result = driver.find_element(By.XPATH, f'/html/body/div/table/tbody/tr[4]/td[3]/table/tbody/tr/td/b[{3 * (x + 1)}]').text
-        e = driver.find_element(By.XPATH, f'/html/body/div/table/tbody/tr[4]/td[3]/table/tbody/tr/td/font[{2 * (x + 1)}]').text
+        result = driver.find_element(By.XPATH,
+                                     f'/html/body/div/table/tbody/tr[4]/td[3]/table/tbody/tr/td/b[{3 * (x + 1)}]').text
+        e = driver.find_element(By.XPATH,
+                                f'/html/body/div/table/tbody/tr[4]/td[3]/table/tbody/tr/td/font[{2 * (x + 1)}]').text
         current_df.loc[current_df["peptide"] == e, "antigenicity"] = float(result)
 
     driver.close()
@@ -335,21 +344,26 @@ def get_allergenicity_algpred(peptide_list, pf, current_df):
     driver = webdriver.Chrome(options=options)
     driver.get('https://webs.iiitd.edu.in/raghava/algpred2/batch.html')
 
-    text_box = driver.find_element(By.XPATH, '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/p/font[1]/textarea')
+    text_box = driver.find_element(By.XPATH,
+                                   '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/p/font[1]/textarea')
     text_box.send_keys(pf)
 
-    threshold_value = driver.find_element(By.XPATH, '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/font/p[3]/font/font[1]/b/select/option[10]')
+    threshold_value = driver.find_element(By.XPATH,
+                                          '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/font/p[3]/font/font[1]/b/select/option[10]')
     threshold_value.click()
 
     sleep(0.5)
 
-    submit_button = driver.find_elements(By.XPATH, '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/font/p[3]/font/font[2]/input[2]')
+    submit_button = driver.find_elements(By.XPATH,
+                                         '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/font/p[3]/font/font[2]/input[2]')
     submit_button[0].click()
 
-    elem = WebDriverWait(driver, 30).until(ec.presence_of_element_located((By.XPATH, '/html/body/header/div[3]/main/h1/strong/font/b')))
+    elem = WebDriverWait(driver, 30).until(
+        ec.presence_of_element_located((By.XPATH, '/html/body/header/div[3]/main/h1/strong/font/b')))
 
     for x in range(len(peptide_list)):
-        result = driver.find_element(By.XPATH, f'/html/body/header/div[3]/main/div/table[2]/tbody/tr[{x + 1}]/td[5]').text
+        result = driver.find_element(By.XPATH,
+                                     f'/html/body/header/div[3]/main/div/table[2]/tbody/tr[{x + 1}]/td[5]').text
         current_df.loc[current_df["peptide"] == peptide_list[x], "allergenicity"] = float(result)
 
     driver.close()
@@ -373,19 +387,23 @@ def get_allergenicity_netallergen(peptide_list, pf, current_df):
 
     sleep(3)
 
-    text_box = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
+    text_box = driver.find_element(By.XPATH,
+                                   '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
     driver.execute_script("arguments[0].scrollIntoView();", text_box)
     text_box.send_keys(input_fasta)
 
     sleep(1)
 
-    blast_button = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[4]/td/input')
+    blast_button = driver.find_element(By.XPATH,
+                                       '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[4]/td/input')
     driver.execute_script("arguments[0].click();", blast_button)
 
-    submit_button = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
+    submit_button = driver.find_element(By.XPATH,
+                                        '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
     driver.execute_script("arguments[0].click();", submit_button)
 
-    elem = WebDriverWait(driver, 10000).until(ec.presence_of_element_located((By.XPATH, '/html/body/font/table/tbody/tr/td[3]/h2')))
+    elem = WebDriverWait(driver, 10000).until(
+        ec.presence_of_element_located((By.XPATH, '/html/body/font/table/tbody/tr/td[3]/h2')))
 
     output = driver.find_element(By.XPATH, '/html/body/pre').text
     output = output[:output.find("Explain")]
@@ -418,8 +436,13 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
              results.find('Theoretical pI: ') + 16:results.find('\n', results.find('Theoretical pI: ') + 16, -1)]
         half_life = results[results.find('The estimated half-life is: ') + 28:results.find('hours', results.find(
             'The estimated half-life is: ') + 28, -1) - 1]
-        instability = results[results.find('The instability index (II) is computed to be ') + 45:results.find('\n', results.find('The instability index (II) is computed to be ') + 45, -1)]
-        alipathy = results[results.find('Aliphatic index: ') + 17:results.find('\n', results.find('Aliphatic index: ') + 17, -1)]
+        instability = results[results.find('The instability index (II) is computed to be ') + 45:results.find('\n',
+                                                                                                              results.find(
+                                                                                                                  'The instability index (II) is computed to be ') + 45,
+                                                                                                              -1)]
+        alipathy = results[
+                   results.find('Aliphatic index: ') + 17:results.find('\n', results.find('Aliphatic index: ') + 17,
+                                                                       -1)]
         gravy = results[results.find('Grand average of hydropathicity (GRAVY): ') + 41:]
 
         if h:
@@ -449,10 +472,12 @@ def get_toxicity(peptide_list, pf, current_df):
     submission_box = driver.find_element(By.XPATH, '//*[@id="input_box"]')
     submission_box.send_keys(pf)
 
-    submit_button = driver.find_elements(By.XPATH, '/html/body/table[2]/tbody/tr/td/form/fieldset/table[2]/tbody/tr[3]/td/input[2]')
+    submit_button = driver.find_elements(By.XPATH,
+                                         '/html/body/table[2]/tbody/tr/td/form/fieldset/table[2]/tbody/tr[3]/td/input[2]')
     submit_button[0].click()
 
-    elem = WebDriverWait(driver, 60).until(ec.presence_of_element_located((By.XPATH, '/html/body/div[2]/table/thead/tr[1]/td[1]')))
+    elem = WebDriverWait(driver, 60).until(
+        ec.presence_of_element_located((By.XPATH, '/html/body/div[2]/table/thead/tr[1]/td[1]')))
 
     for x in range(len(peptide_list)):
         result = driver.find_element(By.XPATH, f'/html/body/div[2]/table/tbody/tr[{x + 1}]/td[4]').text
@@ -477,12 +502,15 @@ def get_ifn(peptide_list, pf, current_df):
 
     elem = WebDriverWait(driver, 300).until(ec.presence_of_element_located((By.XPATH, '//*[@class="sorting_asc"]')))
 
-    entry_number = driver.find_element(By.XPATH, '/html/body/div/div/div[3]/div/div/div/div/div[1]/label/select/option[4]')
+    entry_number = driver.find_element(By.XPATH,
+                                       '/html/body/div/div/div[3]/div/div/div/div/div[1]/label/select/option[4]')
     entry_number.click()
 
     for x in range(len(peptide_list)):
-        result = driver.find_element(By.XPATH, f'/html/body/div/div/div[3]/div/div/div/div/table/tbody/tr[{x + 1}]/td[5]').text
-        e = driver.find_element(By.XPATH, f'/html/body/div/div/div[3]/div/div/div/div/table/tbody/tr[{x + 1}]/td[3]/a').text
+        result = driver.find_element(By.XPATH,
+                                     f'/html/body/div/div/div[3]/div/div/div/div/table/tbody/tr[{x + 1}]/td[5]').text
+        e = driver.find_element(By.XPATH,
+                                f'/html/body/div/div/div[3]/div/div/div/div/table/tbody/tr[{x + 1}]/td[3]/a').text
         current_df.loc[current_df["peptide"] == e, "IFNg"] = result
 
     driver.close()
@@ -524,11 +552,13 @@ def normalize_data(df_collected_epitopes, mhc):
         antigenicity_value = df_collected_epitopes[antigenicity_name][i]
         allergenicity_value = df_collected_epitopes[allergenicity_name][i]
         if mhc == "I":
-            new_immunogenicity_value = (immunogenicity_value - immunogenicity_min)/(immunogenicity_max - immunogenicity_min)
+            new_immunogenicity_value = (immunogenicity_value - immunogenicity_min) / (
+                        immunogenicity_max - immunogenicity_min)
         else:
-            new_immunogenicity_value = (immunogenicity_value - immunogenicity_max) / (immunogenicity_min - immunogenicity_max)
-        new_antigenicity_value = (antigenicity_value - antigenicity_min)/(antigenicity_max - antigenicity_min)
-        new_allergenicity_value = (allergenicity_value - allergenicity_max)/(allergenicity_min - allergenicity_max)
+            new_immunogenicity_value = (immunogenicity_value - immunogenicity_max) / (
+                        immunogenicity_min - immunogenicity_max)
+        new_antigenicity_value = (antigenicity_value - antigenicity_min) / (antigenicity_max - antigenicity_min)
+        new_allergenicity_value = (allergenicity_value - allergenicity_max) / (allergenicity_min - allergenicity_max)
         df_collected_epitopes.at[i, immunogenicity_name] = new_immunogenicity_value
         df_collected_epitopes.at[i, antigenicity_name] = new_antigenicity_value
         df_collected_epitopes.at[i, allergenicity_name] = new_allergenicity_value
@@ -551,7 +581,8 @@ def apply_scoring_function(df_normalized_epitopes, mhc):
 
     for i in range(df_normalized_epitopes.shape[0]):
         df_normalized_epitopes["log binding affinity"] = np.log(df_normalized_epitopes["binding affinity (nM)"])
-        df_x = df_normalized_epitopes[["norm immunogenicity", "norm antigenicity", "norm allergenicity", "log binding affinity"]].values
+        df_x = df_normalized_epitopes[
+            ["norm immunogenicity", "norm antigenicity", "norm allergenicity", "log binding affinity"]].values
         predicted_potential = logr.predict_proba(df_x)[:, 1]
         df_normalized_epitopes["potential"] = predicted_potential
     df_normalized_epitopes_ranked = df_normalized_epitopes.sort_values(by=["potential"], ascending=False)
@@ -565,7 +596,8 @@ def get_filtered_epitopes(df_ranked_epitopes, mhc, scoring, h, ins, t, ifn):
         top_20_df = df_ranked_epitopes
     if mhc == "I":
         if h and ins and t:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin")]
         elif h and ins and not t:
             df_filtered_epitopes = top_20_df.loc[
                 (top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40)]
@@ -576,7 +608,8 @@ def get_filtered_epitopes(df_ranked_epitopes, mhc, scoring, h, ins, t, ifn):
             df_filtered_epitopes = top_20_df.loc[
                 (top_20_df["half-life"] > 1)]
         elif not h and ins and t:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin")]
         elif not h and ins and not t:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["instability"] < 40)]
         elif not h and not ins and t:
@@ -585,16 +618,20 @@ def get_filtered_epitopes(df_ranked_epitopes, mhc, scoring, h, ins, t, ifn):
             df_filtered_epitopes = top_20_df.copy()
     else:
         if h and ins and t and ifn:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin") & (top_20_df["IFNg"] == "POSITIVE")]
+            df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (
+                        top_20_df["toxicity"] == "Non-Toxin") & (top_20_df["IFNg"] == "POSITIVE")]
         elif h and ins and t and not ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (
-                        top_20_df["toxicity"] == "Non-Toxin")]
+                    top_20_df["toxicity"] == "Non-Toxin")]
         elif h and ins and not t and ifn:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (top_20_df["IFNg"] == "POSITIVE")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40) & (top_20_df["IFNg"] == "POSITIVE")]
         elif h and ins and not t and not ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["instability"] < 40)]
         elif h and not ins and t and ifn:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["toxicity"] == "Non-Toxin") & (top_20_df["IFNg"] == "POSITIVE")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["half-life"] > 1) & (top_20_df["toxicity"] == "Non-Toxin") & (
+                            top_20_df["IFNg"] == "POSITIVE")]
         elif h and not ins and t and not ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1) & (top_20_df["toxicity"] == "Non-Toxin")]
         elif h and not ins and not t and ifn:
@@ -602,15 +639,19 @@ def get_filtered_epitopes(df_ranked_epitopes, mhc, scoring, h, ins, t, ifn):
         elif h and not ins and not t and not ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["half-life"] > 1)]
         elif not h and ins and t and ifn:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin") & (top_20_df["IFNg"] == "POSITIVE")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin") & (
+                            top_20_df["IFNg"] == "POSITIVE")]
         elif not h and ins and t and not ifn:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["instability"] < 40) & (top_20_df["toxicity"] == "Non-Toxin")]
         elif not h and ins and not t and ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["instability"] < 40) & (top_20_df["IFNg"] == "POSITIVE")]
         elif not h and ins and not t and not ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["instability"] < 40)]
         elif not h and not ins and t and ifn:
-            df_filtered_epitopes = top_20_df.loc[(top_20_df["toxicity"] == "Non-Toxin") & (top_20_df["IFNg"] == "POSITIVE")]
+            df_filtered_epitopes = top_20_df.loc[
+                (top_20_df["toxicity"] == "Non-Toxin") & (top_20_df["IFNg"] == "POSITIVE")]
         elif not h and not ins and t and not ifn:
             df_filtered_epitopes = top_20_df.loc[(top_20_df["toxicity"] == "Non-Toxin")]
         elif not h and not ins and not t and ifn:
@@ -639,7 +680,8 @@ def get_optimized_epitopes(df_filtered_epitopes, mhc):
                 allele_list = combination[combination.find("HLA"):].split(",")
                 pep = combination[:combination.find("HLA") - 1]
                 for allele in allele_list:
-                    index = df_filtered_epitopes.index[(df_filtered_epitopes["allele"] == allele) & (df_filtered_epitopes["peptide"] == pep)][0]
+                    index = df_filtered_epitopes.index[
+                        (df_filtered_epitopes["allele"] == allele) & (df_filtered_epitopes["peptide"] == pep)][0]
                     op_df.loc[len(op_df)] = df_filtered_epitopes.iloc[index]
     else:
         java_file = "CD4PopCoverageOptimization.java"
@@ -662,7 +704,8 @@ def get_optimized_epitopes(df_filtered_epitopes, mhc):
                 allele_list = combination[combination.find("HLA"):].split(",")
                 pep = combination[:combination.find("HLA") - 1]
                 for allele in allele_list:
-                    index = df_filtered_epitopes.index[(df_filtered_epitopes["allele"] == allele) & (df_filtered_epitopes["peptide"] == pep)][0]
+                    index = df_filtered_epitopes.index[
+                        (df_filtered_epitopes["allele"] == allele) & (df_filtered_epitopes["peptide"] == pep)][0]
                     op_df.loc[len(op_df)] = df_filtered_epitopes.iloc[index]
     return op_df
 
@@ -738,8 +781,11 @@ def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, pa
                "East Africa", "West Africa", "Central Africa", "North Africa", "South Africa", "West Indies",
                "North America", "Central America", "South America", "Oceania"]
     region_string = ",".join(regions)
-    regular_results = population_coverage_helper(pop_coverage_filename, region_string, mhc, peptide_allele_filename, plot_output_folder, "pop_cov_path")
-    optimized_results = population_coverage_helper(pop_coverage_filename, region_string, mhc, optimized_peptide_allele_filename, optimized_plot_output_folder, "op_pop_cov_path")
+    regular_results = population_coverage_helper(pop_coverage_filename, region_string, mhc, peptide_allele_filename,
+                                                 plot_output_folder, "pop_cov_path")
+    optimized_results = population_coverage_helper(pop_coverage_filename, region_string, mhc,
+                                                   optimized_peptide_allele_filename, optimized_plot_output_folder,
+                                                   "op_pop_cov_path")
     return regular_results, optimized_results
 
 
@@ -756,7 +802,8 @@ class Worker(QThread):
     def __init__(self):
         super().__init__()
 
-    def auto_epi_collect(self, gene, gene_file, existing, existing2, mut, i, an, al, ali, g, iso, h, ins, t, ifn, filtering, scoring,
+    def auto_epi_collect(self, gene, gene_file, existing, existing2, mut, i, an, al, ali, g, iso, h, ins, t, ifn,
+                         filtering, scoring,
                          pop_cov, mhc_classes):
         self.is_running = True
         self.ready_to_start = False
@@ -847,7 +894,8 @@ class Worker(QThread):
             self.update_signal.emit(f"Done generating possible epitopes and binding affinities\n")
             print("Filtering out unmutated epitopes...")
             self.update_signal.emit(f"Filtering out unmutated epitopes...\n")
-            mutant_gene_mut_epitopes_dict = get_mutant_epitopes(all_mutations, mhc_class, mutant_gene_all_epitopes_dict, parent_dir)
+            mutant_gene_mut_epitopes_dict = get_mutant_epitopes(all_mutations, mhc_class, mutant_gene_all_epitopes_dict,
+                                                                parent_dir)
             print("Done filtering out unmutated epitopes")
             self.update_signal.emit(f"Done filtering out unmutated epitopes\n")
             print("Generating possible peptide sequences for all mutations...")
@@ -921,7 +969,8 @@ class Worker(QThread):
                         if h or ins or ali or iso or g:
                             print(
                                 f"Obtaining {pm} half-life, instability, isoelectric point, aliphatic index, and/or GRAVY scores...")
-                            self.update_signal.emit(f"Obtaining {pm} half-life, instability, isoelectric point, aliphatic index, and/or GRAVY scores...\n")
+                            self.update_signal.emit(
+                                f"Obtaining {pm} half-life, instability, isoelectric point, aliphatic index, and/or GRAVY scores...\n")
                             current_df = get_protparam(peptides, h, ins, ali, iso, g, current_df)
                             print(
                                 f"Done obtaining {pm} half-life, instability, isoelectric point, aliphatic index, and/or GRAVY scores")
@@ -938,11 +987,13 @@ class Worker(QThread):
                         pd.DataFrame(mutations_cancer_dict[pm], columns=["Cancers"]).to_excel(w, header=True,
                                                                                               index=False,
                                                                                               sheet_name=pm,
-                                                                                              startcol=current_df.shape[1],
+                                                                                              startcol=current_df.shape[
+                                                                                                  1],
                                                                                               startrow=0)
                         print(current_df)
                         print(f"Done obtaining all MHC I epitopes and clinical variables for {pm} mutation")
-                        self.update_signal.emit(f"Done obtaining all MHC I epitopes and clinical variables for {pm} mutation\n")
+                        self.update_signal.emit(
+                            f"Done obtaining all MHC I epitopes and clinical variables for {pm} mutation\n")
                 else:
                     if existing2 != "":
                         for pm in existing_dict2.keys():
@@ -1013,11 +1064,13 @@ class Worker(QThread):
                         pd.DataFrame(mutations_cancer_dict[pm], columns=["Cancers"]).to_excel(w, header=True,
                                                                                               index=False,
                                                                                               sheet_name=pm,
-                                                                                              startcol=current_df.shape[1],
+                                                                                              startcol=current_df.shape[
+                                                                                                  1],
                                                                                               startrow=0)
                         print(current_df)
                         print(f"Done obtaining all MHC II epitopes and clinical variables for {pm} mutation")
-                        self.update_signal.emit(f"Done obtaining all MHC II epitopes and clinical variables for {pm} mutation\n")
+                        self.update_signal.emit(
+                            f"Done obtaining all MHC II epitopes and clinical variables for {pm} mutation\n")
 
             if mhc_class == "I":
                 if existing == "":
@@ -1064,7 +1117,8 @@ class Worker(QThread):
                         pd.DataFrame(mutations_cancer_dict[pm], columns=["Cancers"]).to_excel(w, header=True,
                                                                                               index=False,
                                                                                               sheet_name=pm,
-                                                                                              startcol=ranked_df.shape[1],
+                                                                                              startcol=ranked_df.shape[
+                                                                                                  1],
                                                                                               startrow=0)
                         print(f"Done normalizing and ranking epitopes for {pm} mutation")
                         self.update_signal.emit(f"Done normalizing and ranking epitopes for {pm} mutation\n")
@@ -1176,9 +1230,12 @@ class Worker(QThread):
                     sum_filtered_epitopes_df = pd.DataFrame()
                     for cancer in cancers:
                         sum_filtered_epitopes_df = pd.concat([sum_filtered_epitopes_df, pop_cov_dict[cancer]], axis=0)
+                    sum_filtered_epitopes_df.reset_index(drop=True, inplace=True)
                     if sum_filtered_epitopes_df.empty:
                         print(
                             f"No filtered MHC Class {mhc_class} epitopes")
+                        optimized_df = pd.DataFrame(columns=["No Optimized Epitopes"])
+                        optimized_df.to_excel(w, header=True, index=False)
                     else:
                         optimized_df = get_optimized_epitopes(sum_filtered_epitopes_df, mhc_class)
                         optimized_df.to_excel(w, header=True, index=False)
@@ -1213,7 +1270,8 @@ class Worker(QThread):
         end = time.time()
         print(
             f"AutoEpiCollect complete in {end - start} seconds, please click the button to the right to see your epitopes for each mutation")
-        self.update_signal.emit(f"AutoEpiCollect complete in {end - start} seconds, please click the button to the right to see your epitopes for each mutation\n")
+        self.update_signal.emit(
+            f"AutoEpiCollect complete in {end - start} seconds, please click the button to the right to see your epitopes for each mutation\n")
         print("All other outputted Excel spreadsheets will be in the same directory as this program")
         self.update_signal.emit(
             f"All other outputted Excel spreadsheets will be in the same directory as this program\n\n")
@@ -1227,6 +1285,7 @@ class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(800, 600)
+        MainWindow.setMaximumSize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
@@ -1298,6 +1357,7 @@ class Ui_MainWindow(object):
         self.toxicity_checkbox = QtWidgets.QCheckBox(self.horizontalLayoutWidget_2)
         self.toxicity_checkbox.setObjectName("toxicity_checkbox")
         self.horizontalLayout_2.addWidget(self.toxicity_checkbox)
+        self.toxicity_checkbox.setSizePolicy(1, 1)
         self.ifn_checkbox = QtWidgets.QCheckBox(self.horizontalLayoutWidget_2)
         self.ifn_checkbox.setObjectName("ifn_checkbox")
         self.horizontalLayout_2.addWidget(self.ifn_checkbox)
@@ -1569,15 +1629,34 @@ class Ui_MainWindow(object):
                 self.epistability_checkbox.setChecked(True)
 
     def display_result(self, mhc):
+        os.name = platform.system()
+        print(self.worker.spreadsheet_output1)
         if self.worker.check_output:
             if mhc == "Class I":
                 print(self.worker.spreadsheet_output1)
-                subprocess.run(["open", self.worker.spreadsheet_output1])
+                if os.name == "Windows":
+                    os.startfile(self.worker.spreadsheet_output1)
+                elif os.name == "Darwin":
+                    subprocess.run(["open", self.worker.spreadsheet_output1])
+                elif os.name == "Linux":
+                    subprocess.run(["xdg-open", self.worker.spreadsheet_output1])
             elif mhc == "Class II":
-                subprocess.run(["open", self.worker.spreadsheet_output2])
+                if os.name == "Windows":
+                    os.startfile(self.worker.spreadsheet_output2)
+                elif os.name == "Darwin":
+                    subprocess.run(["open", self.worker.spreadsheet_output2])
+                elif os.name == "Linux":
+                    subprocess.run(["xdg-open", self.worker.spreadsheet_output2])
             else:
-                subprocess.run(["open", self.worker.spreadsheet_output1])
-                subprocess.run(["open", self.worker.spreadsheet_output2])
+                if os.name == "Windows":
+                    os.startfile(self.worker.spreadsheet_output1)
+                    os.startfile(self.worker.spreadsheet_output2)
+                elif os.name == "Darwin":
+                    subprocess.run(["open", self.worker.spreadsheet_output1])
+                    subprocess.run(["open", self.worker.spreadsheet_output2])
+                elif os.name == "Linux":
+                    subprocess.run(["xdg-open", self.worker.spreadsheet_output1])
+                    subprocess.run(["xdg-open", self.worker.spreadsheet_output2])
 
     def take_text_input(self):
         immunogenicity = self.immunogenicity_checkbox.isChecked()
@@ -1758,16 +1837,19 @@ class Ui_MainWindow(object):
         self.gravy_checkbox.setText(_translate("MainWindow", "GRAVY Score"))
         self.pi_checkbox.setText(_translate("MainWindow", "Isoelectric Point"))
         self.submit_button.setText(_translate("MainWindow", "Submit"))
-        self.main_title.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:48pt;\">AutoEpiCollect</span></p></body></html>"))
-        self.or_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:18pt; color:#00de68;\">OR</span></p></body></html>"))
-        self.cancer_pm_box.setHtml(_translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
-"<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
-"p, li { white-space: pre-wrap; }\n"
-"hr { height: 1px; border-width: 0; }\n"
-"li.unchecked::marker { content: \"\\2610\"; }\n"
-"li.checked::marker { content: \"\\2612\"; }\n"
-"</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
+        self.main_title.setText(_translate("MainWindow",
+                                           "<html><head/><body><p><span style=\" font-size:48pt;\">AutoEpiCollect</span></p></body></html>"))
+        self.or_label.setText(_translate("MainWindow",
+                                         "<html><head/><body><p><span style=\" font-size:18pt; color:#00de68;\">OR</span></p></body></html>"))
+        self.cancer_pm_box.setHtml(_translate("MainWindow",
+                                              "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+                                              "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
+                                              "p, li { white-space: pre-wrap; }\n"
+                                              "hr { height: 1px; border-width: 0; }\n"
+                                              "li.unchecked::marker { content: \"\\2610\"; }\n"
+                                              "li.checked::marker { content: \"\\2612\"; }\n"
+                                              "</style></head><body style=\" font-family:\'.AppleSystemUIFont\'; font-size:13pt; font-weight:400; font-style:normal;\">\n"
+                                              "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><br /></p></body></html>"))
         self.toxicity_checkbox.setText(_translate("MainWindow", "Toxicity"))
         self.ifn_checkbox.setText(_translate("MainWindow", "IFN-γ Release"))
         self.starting_combo.setItemText(0, _translate("MainWindow", "-- Collection Option"))
@@ -1795,9 +1877,12 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
+
     app = QtWidgets.QApplication(sys.argv)
     # app.setStyle(QStyleFactory.create("Fusion"))
     # app.setStyle(QStyleFactory.create("Windows"))
+    font = QFont("Arial")
+    app.setFont(font)
     MainWindow = QtWidgets.QMainWindow()
     ui = Ui_MainWindow()
     ui.setupUi(MainWindow)
