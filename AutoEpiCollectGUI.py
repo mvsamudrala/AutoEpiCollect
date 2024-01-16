@@ -1633,7 +1633,6 @@ class Ui_MainWindow(object):
         print(self.worker.spreadsheet_output1)
         if self.worker.check_output:
             if mhc == "Class I":
-                print(self.worker.spreadsheet_output1)
                 if os.name == "Windows":
                     os.startfile(self.worker.spreadsheet_output1)
                 elif os.name == "Darwin":
