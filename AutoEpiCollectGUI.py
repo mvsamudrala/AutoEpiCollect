@@ -1,5 +1,5 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
-from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyleFactory
+from PyQt5.QtWidgets import QMessageBox, QFileDialog, QStyleFactory, QDesktopWidget
 from PyQt5.QtCore import QObject, QThread, pyqtSignal, QTimer
 from PyQt5.QtGui import QFont
 import subprocess
@@ -1283,57 +1283,119 @@ class Worker(QThread):
 
 class Ui_MainWindow(object):
     def setupUi(self, MainWindow):
+        self.scale_factor = 2
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(800, 600)
-        MainWindow.setMaximumSize(800, 600)
+        if platform.system() == "Windows":
+            mainwindow_width = 800 * self.scale_factor
+            mainwindow_height = 600 * self.scale_factor
+            MainWindow.resize(mainwindow_width, mainwindow_height)
+            MainWindow.setMaximumSize(mainwindow_width, mainwindow_height)
+        else:
+            MainWindow.resize(800, 600)
+            MainWindow.setMaximumSize(800, 600)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.stackedWidget = QtWidgets.QStackedWidget(self.centralwidget)
-        self.stackedWidget.setGeometry(QtCore.QRect(-20, 0, 821, 571))
+        stackedWidget_geometry = QtCore.QRect(-20, 0, 821, 571)
+        scaled_stackedWidget_geometry = self.scale_geometry(stackedWidget_geometry)
+        if platform.system() == "Windows":
+            self.stackedWidget.setGeometry(scaled_stackedWidget_geometry)
+        else:
+            self.stackedWidget.setGeometry(stackedWidget_geometry)
         self.stackedWidget.setObjectName("stackedWidget")
         self.options_page = QtWidgets.QWidget()
         self.options_page.setObjectName("options_page")
         self.mhc_combo = QtWidgets.QComboBox(self.options_page)
-        self.mhc_combo.setGeometry(QtCore.QRect(490, 190, 181, 32))
+        mhc_combo_geometry = QtCore.QRect(490, 190, 181, 32)
+        scaled_mhc_combo_geometry = self.scale_geometry(mhc_combo_geometry)
+        if platform.system() == "Windows":
+            self.mhc_combo.setGeometry(scaled_mhc_combo_geometry)
+        else:
+            self.mhc_combo.setGeometry(mhc_combo_geometry)
         self.mhc_combo.setObjectName("mhc_combo")
         self.mhc_combo.addItem("")
         self.mhc_combo.addItem("")
         self.mhc_combo.addItem("")
         self.mhc_combo.addItem("")
         self.gene_label = QtWidgets.QLabel(self.options_page)
-        self.gene_label.setGeometry(QtCore.QRect(160, 190, 161, 20))
+        gene_label_geometry = QtCore.QRect(170, 190, 161, 20)
+        scaled_gene_label_geometry = self.scale_geometry(gene_label_geometry)
+        if platform.system() == "Windows":
+            self.gene_label.setGeometry(scaled_gene_label_geometry)
+        else:
+            self.gene_label.setGeometry(gene_label_geometry)
         font = QtGui.QFont()
         font.setFamily("Helvetica")
-        font.setPointSize(20)
+        font.setPointSize(14)
         self.gene_label.setFont(font)
         self.gene_label.setObjectName("gene_label")
         self.gene_button = QtWidgets.QPushButton(self.options_page)
-        self.gene_button.setGeometry(QtCore.QRect(500, 130, 161, 41))
+        gene_button_geometry = QtCore.QRect(500, 130, 161, 41)
+        scaled_gene_button_geometry = self.scale_geometry(gene_button_geometry)
+        if platform.system() == "Windows":
+            self.gene_button.setGeometry(scaled_gene_button_geometry)
+        else:
+            self.gene_button.setGeometry(gene_button_geometry)
         self.gene_button.setObjectName("gene_button")
         self.gene_box = QtWidgets.QLineEdit(self.options_page)
-        self.gene_box.setGeometry(QtCore.QRect(110, 120, 271, 61))
+        gene_box_geometry = QtCore.QRect(110, 120, 271, 61)
+        scaled_gene_box_geometry = self.scale_geometry(gene_box_geometry)
+        if platform.system() == "Windows":
+            self.gene_box.setGeometry(scaled_gene_box_geometry)
+        else:
+            self.gene_box.setGeometry(gene_box_geometry)
         self.gene_box.setObjectName("gene_box")
         self.physicochemical_group = QtWidgets.QGroupBox(self.options_page)
-        self.physicochemical_group.setGeometry(QtCore.QRect(590, 230, 161, 81))
+        physicochemical_group_geometry = QtCore.QRect(590, 230, 161, 81)
+        scaled_physicochemical_geometry = self.scale_geometry(physicochemical_group_geometry)
+        if platform.system() == "Windows":
+            self.physicochemical_group.setGeometry(scaled_physicochemical_geometry)
+        else:
+            self.physicochemical_group.setGeometry(physicochemical_group_geometry)
         self.physicochemical_group.setObjectName("physicochemical_group")
         self.aliphatic_checkbox = QtWidgets.QCheckBox(self.physicochemical_group)
-        self.aliphatic_checkbox.setGeometry(QtCore.QRect(0, 20, 121, 20))
+        aliphatic_geometry = QtCore.QRect(0, 20, 121, 20)
+        scaled_aliphatic_geometry = self.scale_geometry(aliphatic_geometry)
+        if platform.system() == "Windows":
+            self.aliphatic_checkbox.setGeometry(scaled_aliphatic_geometry)
+        else:
+            self.aliphatic_checkbox.setGeometry(aliphatic_geometry)
         self.aliphatic_checkbox.setObjectName("aliphatic_checkbox")
         self.gravy_checkbox = QtWidgets.QCheckBox(self.physicochemical_group)
-        self.gravy_checkbox.setGeometry(QtCore.QRect(0, 40, 121, 20))
+        gravy_geometry = QtCore.QRect(0, 40, 121, 20)
+        scaled_gravy_geometry = self.scale_geometry(gravy_geometry)
+        if platform.system() == "Windows":
+            self.gravy_checkbox.setGeometry(scaled_gravy_geometry)
+        else:
+            self.gravy_checkbox.setGeometry(gravy_geometry)
         self.gravy_checkbox.setObjectName("gravy_checkbox")
         self.pi_checkbox = QtWidgets.QCheckBox(self.physicochemical_group)
-        self.pi_checkbox.setGeometry(QtCore.QRect(0, 60, 121, 20))
+        pi_geometry = QtCore.QRect(0, 60, 161, 20)
+        scaled_pi_geometry = self.scale_geometry(pi_geometry)
+        if platform.system() == "Windows":
+            self.pi_checkbox.setGeometry(scaled_pi_geometry)
+        else:
+            self.pi_checkbox.setGeometry(pi_geometry)
         self.pi_checkbox.setObjectName("pi_checkbox")
         self.submit_button = QtWidgets.QPushButton(self.options_page)
-        self.submit_button.setGeometry(QtCore.QRect(360, 470, 121, 51))
+        submit_geometry = QtCore.QRect(360, 470, 121, 51)
+        scaled_submit_geometry = self.scale_geometry(submit_geometry)
+        if platform.system() == "Windows":
+            self.submit_button.setGeometry(scaled_submit_geometry)
+        else:
+            self.submit_button.setGeometry(submit_geometry)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(24)
         self.submit_button.setFont(font)
         self.submit_button.setObjectName("submit_button")
         self.main_title = QtWidgets.QLabel(self.options_page)
-        self.main_title.setGeometry(QtCore.QRect(250, 0, 331, 121))
+        main_geometry = QtCore.QRect(250, 0, 331, 121)
+        scaled_main_geometry = self.scale_geometry(main_geometry)
+        if platform.system() == "Windows":
+            self.main_title.setGeometry(scaled_main_geometry)
+        else:
+            self.main_title.setGeometry(main_geometry)
         font = QtGui.QFont()
         font.setFamily("Microsoft Sans Serif")
         font.setPointSize(36)
@@ -1343,13 +1405,28 @@ class Ui_MainWindow(object):
         self.main_title.setIndent(-1)
         self.main_title.setObjectName("main_title")
         self.or_label = QtWidgets.QLabel(self.options_page)
-        self.or_label.setGeometry(QtCore.QRect(430, 140, 31, 31))
+        or_geometry = QtCore.QRect(430, 140, 31, 31)
+        scaled_or_geometry = self.scale_geometry(or_geometry)
+        if platform.system() == "Windows":
+            self.or_label.setGeometry(scaled_or_geometry)
+        else:
+            self.or_label.setGeometry(or_geometry)
         self.or_label.setObjectName("or_label")
         self.cancer_pm_box = QtWidgets.QTextEdit(self.options_page)
-        self.cancer_pm_box.setGeometry(QtCore.QRect(110, 300, 271, 91))
+        cancer_pm_geometry = QtCore.QRect(110, 300, 271, 91)
+        scaled_cancer_pm_geometry = self.scale_geometry(cancer_pm_geometry)
+        if platform.system() == "Windows":
+            self.cancer_pm_box.setGeometry(scaled_cancer_pm_geometry)
+        else:
+            self.cancer_pm_box.setGeometry(cancer_pm_geometry)
         self.cancer_pm_box.setObjectName("cancer_pm_box")
         self.horizontalLayoutWidget_2 = QtWidgets.QWidget(self.options_page)
-        self.horizontalLayoutWidget_2.setGeometry(QtCore.QRect(500, 380, 180, 41))
+        horizontal_geometry = QtCore.QRect(500, 380, 200, 41)
+        scaled_horizontal_geometry = self.scale_geometry(horizontal_geometry)
+        if platform.system() == "Windows":
+            self.horizontalLayoutWidget_2.setGeometry(scaled_horizontal_geometry)
+        else:
+            self.horizontalLayoutWidget_2.setGeometry(horizontal_geometry)
         self.horizontalLayoutWidget_2.setObjectName("horizontalLayoutWidget_2")
         self.horizontalLayout_2 = QtWidgets.QHBoxLayout(self.horizontalLayoutWidget_2)
         self.horizontalLayout_2.setContentsMargins(0, 0, 0, 0)
@@ -1362,7 +1439,12 @@ class Ui_MainWindow(object):
         self.ifn_checkbox.setObjectName("ifn_checkbox")
         self.horizontalLayout_2.addWidget(self.ifn_checkbox)
         self.verticalLayoutWidget_6 = QtWidgets.QWidget(self.options_page)
-        self.verticalLayoutWidget_6.setGeometry(QtCore.QRect(130, 220, 235, 81))
+        vertical_geometry = QtCore.QRect(130, 220, 235, 81)
+        scaled_vertical_geometry = self.scale_geometry(vertical_geometry)
+        if platform.system() == "Windows":
+            self.verticalLayoutWidget_6.setGeometry(scaled_vertical_geometry)
+        else:
+            self.verticalLayoutWidget_6.setGeometry(vertical_geometry)
         self.verticalLayoutWidget_6.setObjectName("verticalLayoutWidget_6")
         self.verticalLayout_7 = QtWidgets.QVBoxLayout(self.verticalLayoutWidget_6)
         self.verticalLayout_7.setContentsMargins(0, 0, 0, 0)
@@ -1388,69 +1470,160 @@ class Ui_MainWindow(object):
         self.existing_data_2_button.setObjectName("existing_data_2_button")
         self.verticalLayout_7.addWidget(self.existing_data_2_button)
         self.immuno_group = QtWidgets.QGroupBox(self.options_page)
-        self.immuno_group.setGeometry(QtCore.QRect(440, 230, 141, 81))
+        immuno_geometry = QtCore.QRect(440, 230, 141, 81)
+        scaled_immuno_geometry = self.scale_geometry(immuno_geometry)
+        if platform.system() == "Windows":
+            self.immuno_group.setGeometry(scaled_immuno_geometry)
+        else:
+            self.immuno_group.setGeometry(immuno_geometry)
         self.immuno_group.setObjectName("immuno_group")
         self.immunogenicity_checkbox = QtWidgets.QCheckBox(self.immuno_group)
-        self.immunogenicity_checkbox.setGeometry(QtCore.QRect(10, 20, 121, 20))
+        immunogenicity_geometry = QtCore.QRect(10, 20, 161, 20)
+        scaled_immunogenicity_geometry = self.scale_geometry(immunogenicity_geometry)
+        if platform.system() == "Windows":
+            self.immunogenicity_checkbox.setGeometry(scaled_immunogenicity_geometry)
+        else:
+            self.immunogenicity_checkbox.setGeometry(immunogenicity_geometry)
         self.immunogenicity_checkbox.setObjectName("immunogenicity_checkbox")
         self.antigenicity_checkbox = QtWidgets.QCheckBox(self.immuno_group)
-        self.antigenicity_checkbox.setGeometry(QtCore.QRect(10, 40, 121, 20))
+        antigenicity_geometry = QtCore.QRect(10, 40, 121, 20)
+        scaled_antigenicity_geometry = self.scale_geometry(antigenicity_geometry)
+        if platform.system() == "Windows":
+            self.antigenicity_checkbox.setGeometry(scaled_antigenicity_geometry)
+        else:
+            self.antigenicity_checkbox.setGeometry(antigenicity_geometry)
         self.antigenicity_checkbox.setObjectName("antigenicity_checkbox")
         self.allergenicity_checkbox = QtWidgets.QCheckBox(self.immuno_group)
-        self.allergenicity_checkbox.setGeometry(QtCore.QRect(10, 60, 121, 20))
+        allergenicity_geometry = QtCore.QRect(10, 60, 121, 20)
+        scaled_allergenicity_geometry = self.scale_geometry(allergenicity_geometry)
+        if platform.system() == "Windows":
+            self.allergenicity_checkbox.setGeometry(scaled_allergenicity_geometry)
+        else:
+            self.allergenicity_checkbox.setGeometry(allergenicity_geometry)
         self.allergenicity_checkbox.setObjectName("allergenicity_checkbox")
         self.stability_group = QtWidgets.QGroupBox(self.options_page)
-        self.stability_group.setGeometry(QtCore.QRect(530, 320, 120, 61))
+        stability_geometry = QtCore.QRect(530, 320, 161, 61)
+        scaled_stability_geometry = self.scale_geometry(stability_geometry)
+        if platform.system() == "Windows":
+            self.stability_group.setGeometry(scaled_stability_geometry)
+        else:
+            self.stability_group.setGeometry(stability_geometry)
         self.stability_group.setObjectName("stability_group")
         self.half_life_checkbox = QtWidgets.QCheckBox(self.stability_group)
-        self.half_life_checkbox.setGeometry(QtCore.QRect(0, 20, 121, 20))
+        half_life_geometry = QtCore.QRect(0, 20, 121, 20)
+        scaled_half_life_geometry = self.scale_geometry(half_life_geometry)
+        if platform.system() == "Windows":
+            self.half_life_checkbox.setGeometry(scaled_half_life_geometry)
+        else:
+            self.half_life_checkbox.setGeometry(half_life_geometry)
         self.half_life_checkbox.setObjectName("half_life_checkbox")
         self.instability_checkbox = QtWidgets.QCheckBox(self.stability_group)
-        self.instability_checkbox.setGeometry(QtCore.QRect(0, 40, 121, 20))
+        instability_geometry = QtCore.QRect(0, 40, 161, 20)
+        scaled_instability_geometry = self.scale_geometry(instability_geometry)
+        if platform.system() == "Windows":
+            self.instability_checkbox.setGeometry(scaled_instability_geometry)
+        else:
+            self.instability_checkbox.setGeometry(instability_geometry)
         self.instability_checkbox.setObjectName("instability_checkbox")
         self.pop_cov_checkbox = QtWidgets.QCheckBox(self.options_page)
-        self.pop_cov_checkbox.setGeometry(QtCore.QRect(490, 440, 211, 20))
+        pop_cov_geometry = QtCore.QRect(490, 440, 230, 20)
+        scaled_pop_cov_geometry = self.scale_geometry(pop_cov_geometry)
+        if platform.system() == "Windows":
+            self.pop_cov_checkbox.setGeometry(scaled_pop_cov_geometry)
+        else:
+            self.pop_cov_checkbox.setGeometry(pop_cov_geometry)
         self.pop_cov_checkbox.setObjectName("pop_cov_checkbox")
         self.cancer_pm_label = QtWidgets.QLabel(self.options_page)
-        self.cancer_pm_label.setGeometry(QtCore.QRect(70, 400, 341, 31))
+        cancer_label_geometry = QtCore.QRect(70, 400, 341, 31)
+        scaled_cancer_label_geometry = self.scale_geometry(cancer_label_geometry)
+        if platform.system() == "Windows":
+            self.cancer_pm_label.setGeometry(scaled_cancer_label_geometry)
+        else:
+            self.cancer_pm_label.setGeometry(cancer_label_geometry)
         font = QtGui.QFont()
         font.setFamily("Helvetica")
-        font.setPointSize(20)
+        if platform.system() == "Windows":
+            font.setPointSize(14)
+        else:
+            font.setPointSize(20)
         self.cancer_pm_label.setFont(font)
         self.cancer_pm_label.setObjectName("cancer_pm_label")
         self.immune_char_checkbox = QtWidgets.QCheckBox(self.options_page)
-        self.immune_char_checkbox.setGeometry(QtCore.QRect(430, 230, 21, 20))
+        immune_char_geometry = QtCore.QRect(430, 230, 160, 20)
+        scaled_immune_char_geometry = self.scale_geometry(immune_char_geometry)
+        if platform.system() == "Windows":
+            self.immune_char_checkbox.setGeometry(scaled_immune_char_geometry)
+        else:
+            self.immune_char_checkbox.setGeometry(immune_char_geometry)
         self.immune_char_checkbox.setObjectName("immune_char_checkbox")
         self.physicochem_checkbox = QtWidgets.QCheckBox(self.options_page)
-        self.physicochem_checkbox.setGeometry(QtCore.QRect(580, 230, 21, 20))
+        physicochem_geometry = QtCore.QRect(580, 230, 160, 20)
+        scaled_physicochem_geometry = self.scale_geometry(physicochem_geometry)
+        if platform.system() == "Windows":
+            self.physicochem_checkbox.setGeometry(scaled_physicochem_geometry)
+        else:
+            self.physicochem_checkbox.setGeometry(physicochem_geometry)
         self.physicochem_checkbox.setObjectName("physicochem_checkbox")
         self.epistability_checkbox = QtWidgets.QCheckBox(self.options_page)
-        self.epistability_checkbox.setGeometry(QtCore.QRect(520, 320, 21, 20))
+        epistability_geometry = QtCore.QRect(520, 320, 160, 20)
+        scaled_epistability_geometry = self.scale_geometry(epistability_geometry)
+        if platform.system() == "Windows":
+            self.epistability_checkbox.setGeometry(scaled_epistability_geometry)
+        else:
+            self.epistability_checkbox.setGeometry(epistability_geometry)
         self.epistability_checkbox.setObjectName("epistability_checkbox")
         self.scoring_checkbox = QtWidgets.QCheckBox(self.options_page)
-        self.scoring_checkbox.setGeometry(QtCore.QRect(490, 420, 211, 20))
+        scoring_geometry = QtCore.QRect(490, 420, 240, 20)
+        scaled_scoring_geometry = self.scale_geometry(scoring_geometry)
+        if platform.system() == "Windows":
+            self.scoring_checkbox.setGeometry(scaled_scoring_geometry)
+        else:
+            self.scoring_checkbox.setGeometry(scoring_geometry)
         self.scoring_checkbox.setObjectName("scoring_checkbox")
         self.filter_checkbox = QtWidgets.QCheckBox(self.options_page)
-        self.filter_checkbox.setGeometry(QtCore.QRect(700, 390, 85, 20))
+        filter_geometry = QtCore.QRect(700, 390, 85, 20)
+        scaled_filter_geometry = self.scale_geometry(filter_geometry)
+        if platform.system() == "Windows":
+            self.filter_checkbox.setGeometry(scaled_filter_geometry)
+        else:
+            self.filter_checkbox.setGeometry(filter_geometry)
         self.filter_checkbox.setObjectName("filter_checkbox")
         self.stackedWidget.addWidget(self.options_page)
         self.output_page = QtWidgets.QWidget()
         self.output_page.setObjectName("output_page")
         self.output_textbox = QtWidgets.QPlainTextEdit(self.output_page)
-        self.output_textbox.setGeometry(QtCore.QRect(60, 33, 721, 391))
+        output_geometry = QtCore.QRect(60, 33, 721, 391)
+        scaled_output_geometry = self.scale_geometry(output_geometry)
+        if platform.system() == "Windows":
+            self.output_textbox.setGeometry(scaled_output_geometry)
+        else:
+            self.output_textbox.setGeometry(output_geometry)
         self.output_textbox.setObjectName("output_textbox")
         self.back_button = QtWidgets.QPushButton(self.output_page)
-        self.back_button.setGeometry(QtCore.QRect(300, 440, 251, 51))
+        back_geometry = QtCore.QRect(300, 440, 251, 51)
+        scaled_back_geometry = self.scale_geometry(back_geometry)
+        if platform.system() == "Windows":
+            self.back_button.setGeometry(scaled_back_geometry)
+        else:
+            self.back_button.setGeometry(back_geometry)
         font = QtGui.QFont()
         font.setFamily("Arial")
         font.setPointSize(24)
         self.back_button.setFont(font)
         self.back_button.setObjectName("back_button")
         self.output_button = QtWidgets.QPushButton(self.output_page)
-        self.output_button.setGeometry(QtCore.QRect(660, 360, 111, 61))
+        output_geometry = QtCore.QRect(660, 360, 111, 61)
+        scaled_output_geometry = self.scale_geometry(output_geometry)
+        if platform.system() == "Windows":
+            self.output_button.setGeometry(scaled_output_geometry)
+        else:
+            self.output_button.setGeometry(output_geometry)
         font = QtGui.QFont()
         font.setFamily("Arial")
-        font.setPointSize(12)
+        if platform.system() == "Windows":
+            font.setPointSize(11)
+        else:
+            font.setPointSize(12)
         self.output_button.setFont(font)
         self.output_button.setObjectName("output_button")
         self.stackedWidget.addWidget(self.output_page)
@@ -1504,6 +1677,14 @@ class Ui_MainWindow(object):
         self.worker_thread = QThread()
         self.worker.moveToThread(self.worker_thread)
         self.worker.update_signal.connect(self.write_to_textbox)
+
+    def scale_geometry(self, original_geometry):
+        x = int(original_geometry.x() * self.scale_factor)
+        y = int(original_geometry.y() * self.scale_factor)
+        width = int(original_geometry.width() * self.scale_factor)
+        height = int(original_geometry.height() * self.scale_factor)
+
+        return QtCore.QRect(x, y, width, height)
 
     def check_immune_characteristics(self):
         if self.immune_char_checkbox.isChecked():
@@ -1630,9 +1811,9 @@ class Ui_MainWindow(object):
 
     def display_result(self, mhc):
         os.name = platform.system()
-        print(self.worker.spreadsheet_output1)
         if self.worker.check_output:
             if mhc == "Class I":
+                print(self.worker.spreadsheet_output1)
                 if os.name == "Windows":
                     os.startfile(self.worker.spreadsheet_output1)
                 elif os.name == "Darwin":
@@ -1640,6 +1821,7 @@ class Ui_MainWindow(object):
                 elif os.name == "Linux":
                     subprocess.run(["xdg-open", self.worker.spreadsheet_output1])
             elif mhc == "Class II":
+                print(self.worker.spreadsheet_output2)
                 if os.name == "Windows":
                     os.startfile(self.worker.spreadsheet_output2)
                 elif os.name == "Darwin":
@@ -1647,6 +1829,8 @@ class Ui_MainWindow(object):
                 elif os.name == "Linux":
                     subprocess.run(["xdg-open", self.worker.spreadsheet_output2])
             else:
+                print(self.worker.spreadsheet_output1)
+                print(self.worker.spreadsheet_output2)
                 if os.name == "Windows":
                     os.startfile(self.worker.spreadsheet_output1)
                     os.startfile(self.worker.spreadsheet_output2)
@@ -1831,15 +2015,18 @@ class Ui_MainWindow(object):
         self.mhc_combo.setItemText(3, _translate("MainWindow", "Class I & II"))
         self.gene_label.setText(_translate("MainWindow", "Input Gene Name"))
         self.gene_button.setText(_translate("MainWindow", "Input Gene File"))
-        self.physicochemical_group.setTitle(_translate("MainWindow", "Physicochemical Properties"))
+        #self.physicochemical_group.setTitle(_translate("MainWindow", "Physicochemical Properties"))
         self.aliphatic_checkbox.setText(_translate("MainWindow", "Aliphatic Index"))
         self.gravy_checkbox.setText(_translate("MainWindow", "GRAVY Score"))
         self.pi_checkbox.setText(_translate("MainWindow", "Isoelectric Point"))
         self.submit_button.setText(_translate("MainWindow", "Submit"))
-        self.main_title.setText(_translate("MainWindow",
-                                           "<html><head/><body><p><span style=\" font-size:48pt;\">AutoEpiCollect</span></p></body></html>"))
-        self.or_label.setText(_translate("MainWindow",
-                                         "<html><head/><body><p><span style=\" font-size:18pt; color:#00de68;\">OR</span></p></body></html>"))
+        if platform.system() == "Windows":
+            self.main_title.setText(_translate("MainWindow",
+                                               "<html><head/><body><p><span style=\" font-size:35pt;\">AutoEpiCollect</span></p></body></html>"))
+            self.or_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:16pt; color:#00de68;\">OR</span></p></body></html>"))
+        else:
+            self.main_title.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:48pt;\">AutoEpiCollect</span></p></body></html>"))
+            self.or_label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:18pt; color:#00de68;\">OR</span></p></body></html>"))
         self.cancer_pm_box.setHtml(_translate("MainWindow",
                                               "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
                                               "<html><head><meta name=\"qrichtext\" content=\"1\" /><meta charset=\"utf-8\" /><style type=\"text/css\">\n"
@@ -1856,18 +2043,18 @@ class Ui_MainWindow(object):
         self.starting_combo.setItemText(2, _translate("MainWindow", "Update Existing Data"))
         self.existing_data_button.setText(_translate("MainWindow", "Input Existing Class I Data (.xlsx)"))
         self.existing_data_2_button.setText(_translate("MainWindow", "Input Existing Class II Data (.xlsx)"))
-        self.immuno_group.setTitle(_translate("MainWindow", "Immune Characteristics"))
+        #self.immuno_group.setTitle(_translate("MainWindow", "Immune Characteristics"))
         self.immunogenicity_checkbox.setText(_translate("MainWindow", "Immunogenicity"))
         self.antigenicity_checkbox.setText(_translate("MainWindow", "Antigenicity"))
         self.allergenicity_checkbox.setText(_translate("MainWindow", "Allergenicity"))
-        self.stability_group.setTitle(_translate("MainWindow", "Epitope Stability"))
+        #self.stability_group.setTitle(_translate("MainWindow", "Epitope Stability"))
         self.half_life_checkbox.setText(_translate("MainWindow", "Half-Life"))
         self.instability_checkbox.setText(_translate("MainWindow", "Instability Index"))
         self.pop_cov_checkbox.setText(_translate("MainWindow", "Population Coverage Analysis"))
         self.cancer_pm_label.setText(_translate("MainWindow", "Input Cancer Types & Point Mutations"))
-        self.immune_char_checkbox.setText(_translate("MainWindow", "CheckBox"))
-        self.physicochem_checkbox.setText(_translate("MainWindow", "CheckBox"))
-        self.epistability_checkbox.setText(_translate("MainWindow", "CheckBox"))
+        self.immune_char_checkbox.setText(_translate("MainWindow", "Immune Chars"))
+        self.physicochem_checkbox.setText(_translate("MainWindow", "Physical Properties"))
+        self.epistability_checkbox.setText(_translate("MainWindow", "Epitope Stability"))
         self.scoring_checkbox.setText(_translate("MainWindow", "Four-Variable Scoring Function"))
         self.filter_checkbox.setText(_translate("MainWindow", "Filter?"))
         self.back_button.setText(_translate("MainWindow", "Back"))
@@ -1876,10 +2063,9 @@ class Ui_MainWindow(object):
 
 if __name__ == "__main__":
     import sys
-
     app = QtWidgets.QApplication(sys.argv)
-    # app.setStyle(QStyleFactory.create("Fusion"))
-    # app.setStyle(QStyleFactory.create("Windows"))
+    #app.setStyle(QStyleFactory.create("Fusion"))
+    #app.setStyle(QStyleFactory.create("Windows"))
     font = QFont("Arial")
     app.setFont(font)
     MainWindow = QtWidgets.QMainWindow()
