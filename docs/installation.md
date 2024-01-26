@@ -65,7 +65,6 @@ git --version
 If the Git version number appears, then you can move on to the 
 [AutoEpiCollect installation process](#install-autoepicollect). If not, then please navigate to the [Git downloads 
 website](https://git-scm.com/downloads) and follow the instructions to complete the installation process.
-## ChromeDriver
 
 ## Install AutoEpiCollect
 **Note: For Windows users. Anaconda Prompt is a shell program similar to Command Prompt that gives users access to 
@@ -98,8 +97,37 @@ environment::
 ```bash
 conda deactivate
 ```
-## Testing AutoEpiCollect
-To run the GUI program, enter the following command while the aec_venv environment is running::
+
+## ChromeDriver
+AutoEpiCollect uses in-silico tools to collect essential epitope data for ranking and filtration processes. Some of 
+these in-silico tools are operated through webscraping functions encoded into AutoEpiCollect. The web scraping 
+functionalities rely on ChromeDriver, a specialized program that enables automated web scraping specifically tailored 
+for the Chrome browser. If not downloaded already, please download and use Chrome as the browser of choice for 
+AutoEpiCollect. Next, follow the steps below to download the correct version of ChromeDriver for your machine.
+1. Update Chrome to its most current version by clicking the three dots in the upper right corner and checking to 
+   see if any update is available.
+2. Navigate to this website, https://chromedriver.chromium.org/downloads/version-selection, and click on the Chrome 
+   for Testing (CfT) availability dashboard. Here you will find the latest stable version of ChromeDriver.
+3. Click on the link for "Stable" and find the chromedriver binary matching the platform of your system. Refer to 
+   the table below to see which platform matches your machine's specifications.
+
+| Specification | Platform |
+| ------------- | -------- |
+| Macs with Apple Silicon | mac-arm64 |
+| Macs with Intel Chips | mac-x64 |
+| Windows 32-bit | win32 |
+| Windows 64-bit | win64 |
+| Linux 64-bit | linux64 |
+
+4. Copy and paste the link next to your chosen binary to download a zip file with the ChromeDriver program. 
+5. Open the zip file and look into the folder to find the chromedriver executable file. 
+6. This final step is crucial for AutoEpiCollect to use ChromeDriver. **Move the chromedriver executable 
+   into the downloaded AutoEpiCollect folder.**
+
+You should now have all the dependencies needed to successfully run AutoEpiCollect.
+
+## Opening AutoEpiCollectGUI
+To open the GUI program, enter the following command while the aec_venv environment is active::
 ```bash
 python AutoEpiCollectGUI.py
 ```
