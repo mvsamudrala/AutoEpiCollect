@@ -2,5 +2,5 @@ site_name: AutoEpiCollect
 repo_url: https://github.com/mvsamudrala/AutoEpiCollect
 nav:
   - Home: index.md
-  - About: about.md
+  - Installation: installation.md
   - User Guide: guide.md
