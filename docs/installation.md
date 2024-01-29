@@ -54,6 +54,9 @@ to the [Miniconda installation](https://docs.conda.io/projects/miniconda/en/late
 website, download the Python 3.x installer compatible with your system, open the downloaded file, and follow the 
 instructions to finish the Miniconda installation.**
 
+## Java
+
+
 ## Git
 Git is a version control system that tracks changes in computer files, mainly source code. AutoEpiCollect is hosted 
 on GitHub, a platform that stores Git repositories. Installing Git will allow you to easily download the most 
@@ -104,6 +107,7 @@ these in-silico tools are operated through webscraping functions encoded into Au
 functionalities rely on ChromeDriver, a specialized program that enables automated web scraping specifically tailored 
 for the Chrome browser. If not downloaded already, please download and use Chrome as the browser of choice for 
 AutoEpiCollect. Next, follow the steps below to download the correct version of ChromeDriver for your machine.
+
 1. Update Chrome to its most current version by clicking the three dots in the upper right corner and checking to 
    see if any update is available.
 2. Navigate to this website, https://chromedriver.chromium.org/downloads/version-selection, and click on the Chrome 
