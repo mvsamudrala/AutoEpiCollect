@@ -15,7 +15,7 @@ installed (if not installed, this means you must download Miniconda). Run the fo
 conda search python
 ```
 If a list of Python versions >=3.8.0 appear, you may skip the rest of the Miniconda installation and 
-proceed to the [git installation process](#git).
+proceed to the next section.
 
 
 ### Linux
@@ -55,8 +55,21 @@ website, download the Python 3.x installer compatible with your system, open the
 instructions to finish the Miniconda installation.**
 
 ## Java
+Two of the tools required for AutoEpiCollect's population coverage analysis are PCOptim and PCOptim-CD. These programs, 
+developed by Savsani and Kim et al., are coded in Java<sup>1,2</sup>. Please run the code below on your Terminal or 
+Command Prompt to check if Java is already installed on your system::
+```bash
+java --version
+```
+If a Java version number 17 or greater appears, you can move on to the next section. Otherwise, please watch the 
+videos linked below to install Java on your operating system. Make sure to set Java home path in accordance with the 
+videos.
 
+[Windows](https://www.youtube.com/watch?v=SQykK40fFds&t=324s&ab_channel=GeekyScript)
 
+[MacOS](https://www.youtube.com/watch?v=PQk9O03cukQ&ab_channel=ProgrammingKnowledge)
+
+[Linux](https://www.youtube.com/watch?v=vVrIDJ--GOA&ab_channel=ProgrammingKnowledge)
 ## Git
 Git is a version control system that tracks changes in computer files, mainly source code. AutoEpiCollect is hosted 
 on GitHub, a platform that stores Git repositories. Installing Git will allow you to easily download the most 
@@ -67,7 +80,8 @@ git --version
 ```
 If the Git version number appears, then you can move on to the 
 [AutoEpiCollect installation process](#install-autoepicollect). If not, then please navigate to the [Git downloads 
-website](https://git-scm.com/downloads) and follow the instructions to complete the installation process.
+website](https://git-scm.com/downloads) and follow the instructions to complete the installation process. During the 
+installation process, select all the default or recommended settings. 
 
 ## Install AutoEpiCollect
 **Note: For Windows users. Anaconda Prompt is a shell program similar to Command Prompt that gives users access to 
@@ -79,6 +93,18 @@ Prompt program.**
 To install AutoEpiCollect, you will need to copy all the necessary files from AutoEpiCollect's GitHub repository. 
 Then, you must enter AutoEpiCollect's directory to access all the main files and programs. Enter the 
 commands below in Terminal or Anaconda Prompt (on Windows) to gain access to AutoEpiCollect's directory::
+
+First, navigate to your home directory.
+
+Windows:
+```cmd
+cd %HOMEPATH%
+```
+Mac and Linux:
+```bash
+cd ~
+```
+Next, download the AutoEpiCollect folder from the GitHub repository.
 ```bash
 git clone https://github.com/mvsamudrala/AutoEpiCollect
 cd AutoEpiCollect
@@ -128,10 +154,10 @@ AutoEpiCollect. Next, follow the steps below to download the correct version of 
 6. This final step is crucial for AutoEpiCollect to use ChromeDriver. **Move the chromedriver executable 
    into the downloaded AutoEpiCollect folder.**
 
-You should now have all the dependencies needed to successfully run AutoEpiCollect.
-
-## Opening AutoEpiCollectGUI
-To open the GUI program, enter the following command while the aec_venv environment is active::
-```bash
-python AutoEpiCollectGUI.py
-```
+You should now have all the dependencies needed to successfully run AutoEpiCollect. Please click the User Guide tab 
+above to read the user guide and learn about all of AutoEpiCollect's functionalities.
+## References
+1. Savsani, K., Jabbour, G., & Dakshanamurthy, S. (2021). A New Epitope Selection Method: Application to Design a 
+   Multi-Valent Epitope Vaccine Targeting HRAS Oncogene in Squamous Cell Carcinoma. Vaccines, 10(1), 63. https://doi.org/10.3390/vaccines10010063
+2. Kim, M., Savsani, K., & Dakshanamurthy, S. (2023). A Peptide Vaccine Design Targeting KIT Mutations in Acute 
+Myeloid Leukemia. Pharmaceuticals, 16(7), 932. https://doi.org/10.3390/ph16070932
