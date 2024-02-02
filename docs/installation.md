@@ -62,8 +62,8 @@ Command Prompt to check if Java is already installed on your system::
 java --version
 ```
 If a Java version number 17 or greater appears, you can move on to the next section. Otherwise, please watch the 
-videos linked below to install Java on your operating system. Make sure to set Java home path in accordance with the 
-videos.
+videos linked below to install Java on your operating system. Make sure to set the Java home path in accordance with 
+the videos.
 
 [Windows](https://www.youtube.com/watch?v=SQykK40fFds&t=324s&ab_channel=GeekyScript)
 
