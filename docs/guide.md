@@ -17,8 +17,8 @@ delete or tamper with any of these files as they are needed for AutoEpiCollect t
 | MHCII_HLA_input.txt             | The 27-allele HLA Class II reference set.                                                                                                                 |
 | environment.yml                 | The .yml file specifying the dependencies used to create the conda virtual environment for AutoEpiCollect.                                                |
 | mkdocs.yml                      | Another file specifying the build for the documentation page.                                                                                             |
-| refactored_trainingset_cd4.csv  | This is the training data used for the MHC Class II scoring function.                                                                                     |
-| refactored_trainingset_cd8.csv  | This is the training data used for the MHC Class I scoring function.                                                                                      |
+| refactored_trainingset_cd4.csv  | The training data used for the MHC Class II scoring function.                                                                                             |
+| refactored_trainingset_cd8.csv  | The training data used for the MHC Class I scoring function.                                                                                              |
 
 ## Opening AutoEpiCollectGUI
 First, navigate to the AutoEpiCollect directory using these command::
