@@ -57,6 +57,10 @@ The numbered boxes in the home screen above show the order of inputs:
 6. The final button on the home screen labeled six is the submit button. Pressing this button will take you to the 
    output window shown below where you can view the progress of AutoEpiCollect's epitope selection method with live updates.
 
+**Note: The MHC Class I allergenicity tool, the toxicity tool, and the IFN-gamma release tool are all created under 
+the same research group. Sometime, these websites are down for bug fixes which may cause the web servers to become 
+unreachable. If you see that AutoEpiCollect is failing at these steps in the epitope collection process, 
+please wait up to 48 hours to allow these web servers to come back online.**
 ## Output Window and Viewing Final Epitope Results
 ![Output Window](output-window.png)
 After pressing the submit button, you will be taken to this output window which shows live updates of 
