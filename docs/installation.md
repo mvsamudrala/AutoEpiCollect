@@ -154,8 +154,12 @@ AutoEpiCollect. Next, follow the steps below to download the correct version of 
 6. This final step is crucial for AutoEpiCollect to use ChromeDriver. **Move the chromedriver executable 
    into the downloaded AutoEpiCollect folder.**
 
-You should now have all the dependencies needed to successfully run AutoEpiCollect. Please click the User Guide tab 
-above to read the user guide and learn about all of AutoEpiCollect's functionalities.
+## Excel
+AutoEpiCollect outputs its results in .xlsx spreadsheets that can be opened with Microsoft Excel. Please make sure 
+you have Excel downloaded on your machine before running AutoEpiCollect so that you can view your final results.
+
+**You should now have all the dependencies needed to successfully run AutoEpiCollect. Please click the User Guide tab 
+above to read the user guide and learn about all of AutoEpiCollect's functionalities.**
 ## References
 1. Savsani, K., Jabbour, G., & Dakshanamurthy, S. (2021). A New Epitope Selection Method: Application to Design a 
    Multi-Valent Epitope Vaccine Targeting HRAS Oncogene in Squamous Cell Carcinoma. Vaccines, 10(1), 63. https://doi.org/10.3390/vaccines10010063
