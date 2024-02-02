@@ -67,24 +67,18 @@ open an Excel file of all the pre-ranked and pre-filtered epitope data collected
 the table below to learn about what possible output files are made during AutoEpiCollect's epitope selection process.
 You can find all the files if you navigate to the created AutoEpiCollect directory.
 
-| File*                                  | Description |
-|----------------------------------------|-------------|
-| {gene_target}.fasta                    | linux64     |
-| all_variables_mhci.xlsx                | mac-arm64   |
-| all_variables_mhcii.xlsx               | mac-x64     |
-| all_epitopes_by_cancer_mhci.xlsx       | win64       |
-| all_epitopes_by_cancer_mhcii.xlsx      | linux64     |
-| all_variables_ranked_mhci.xlsx         | linux64     |
-| all_variables_ranked_mhcii.xlsx        | linux64     |
-| ranked_epitopes_by_cancer_mhci.xlsx    | linux64     |
-| ranked_epitopes_by_cancer_mhcii.xlsx   | linux64     |
-| top_epitopes_mhci.xlsx                 | linux64     |
-| top_epitopes_mhcii.xlsx                | linux64     |
-| top_epitopes_by_cancer_mhci.xlsx       | linux64     |
-| top_epitopes_by_cancer_mhcii.xlsx      | linux64     |
-| optimized_epitopes_mhci.xlsx           | linux64     |
-| optimized_epitopes_mhcii.xlsx          | linux64     |
-| population_coverage_results_mhci.xlsx  | linux64     |
-| population_coverage_results_mhcii.xlsx | linux64     |
+| File*                                            | Description             |
+|--------------------------------------------------|-------------------------|
+| {gene_target}.fasta                              | This FASTA-formatted fi |
+| all_variables_{mhci or mhcii}.xlsx               | mac-arm64               |
+| all_epitopes_by_cancer_{mhci or mhcii}.xlsx      | win64                   |
+| all_variables_ranked_{mhci or mhcii}.xlsx        | linux64                 |
+| ranked_epitopes_by_cancer_{mhci or mhcii}.xlsx   | linux64                 |
+| top_epitopes_{mhci or mhcii}.xlsx                | linux64                 |
+| top_epitopes_by_cancer_{mhci or mhcii}.xlsx      | linux64                 |
+| filtered_epitopes_{cancer}_{mhci or mhcii}.txt   | linux64                 |
+| optimized_epitopes_{mhci or mhcii}.xlsx          | linux64                 |
+| optimized_epitopes_{cancer}_{mhci or mhcii}.txt  | linux64                 |
+| population_coverage_results_{mhci or mhcii}.xlsx | linux64                 |
 
 
