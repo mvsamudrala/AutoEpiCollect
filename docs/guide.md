@@ -1,6 +1,25 @@
 # User Guide
 In this section, you will learn how to operate AutoEpiCollect and access the outputted files to view your final 
 epitope results.
+## Pre-Installed Files with AutoEpiCollect
+The table below details the files that come with AutoEpiCollect's installation process. Users should not 
+delete or tamper with any of these files as they are needed for AutoEpiCollect to run smoothly.
+
+| File                            | Description                                                                                                                                               |
+|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
+| docs                            | A folder with the documentation you are reading right now.                                                                                                |
+| immunogenicity                  | A folder with IEDB's MHC Class I immunogenicity tool.                                                                                                     |
+| .readthedocs.yaml               | A file specifying the build for the documentation page using readthedocs.                                                                                 |
+| AutoEpiCollectGUI.py            | The main GUI program used for AutoEpiCollect's epitope selection method. This should be the only pre-installed file that you will open and interact with. |
+| PopCoverageOptimization.java    | This is PCOptim, the program used for optimizing MHC Class I epitope/HLA pairs before population coverage analysis.                                       |
+| CD4PopCoverageOptimization.java | This is PCOptim-CD, the program used for optimizing MHC Class II epitope/HLA pairs before population coverage analysis.                                   |
+| MHCI_HLA_input.txt              | The 27-allele HLA Class I reference set.                                                                                                                  |
+| MHCII_HLA_input.txt             | The 27-allele HLA Class II reference set.                                                                                                                 |
+| environment.yml                 | The .yml file specifying the dependencies used to create the conda virtual environment for AutoEpiCollect.                                                |
+| mkdocs.yml                      | Another file specifying the build for the documentation page.                                                                                             |
+| refactored_trainingset_cd4.csv  | This is the training data used for the MHC Class II scoring function.                                                                                     |
+| refactored_trainingset_cd8.csv  | This is the training data used for the MHC Class I scoring function.                                                                                      |
+
 ## Opening AutoEpiCollectGUI
 First, navigate to the AutoEpiCollect directory using these command::
 
@@ -68,10 +87,7 @@ AutoEpiCollect's progress. During this time, you will be allowed to hit the back
 have selected, but you cannot restart the epitope selection process until the program is complete or until you close 
 out the program while it is running. Clicking on the "Click for Output" button when the program is completed will 
 open an Excel file ("all_variables_{mhci or mhcii}.xlsx") of all the pre-ranked and pre-filtered epitope data collected, 
-organized by 
-point 
-mutation. View 
-the table below to learn about what possible output files are made during AutoEpiCollect's epitope selection process.
+organized by point mutation. View the table below to learn about what possible output files are made during AutoEpiCollect's epitope selection process.
 You can find all the files if you navigate to the created AutoEpiCollect directory.
 
 | File*                                           | Description                                                                                                                                                                                                                      |
@@ -92,25 +108,6 @@ You can find all the files if you navigate to the created AutoEpiCollect directo
 | Population_Coverage_Plots                       | A folder containing population coverage graphs for both the regular (filtered) and optimized list of epitope/HLA pairs. There are graphs for each major world region.                                                            |
 
 *If the "Update Existing Data" option is selected, these files will show as "{filename}_updated.xlsx" 
-
-## Pre-Installed Files with AutoEpiCollect
-This next table below details the files that come with AutoEpiCollect's installation process. Users should not 
-delete or tamper with any of these files as they are needed for AutoEpiCollect to run smoothly.
-
-| File                            | Description                                                                                                                                               |
-|---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
-| docs                            | A folder with the documentation you are reading right now.                                                                                                |
-| immunogenicity                  | A folder with IEDB's MHC Class I immunogenicity tool.                                                                                                     |
-| .readthedocs.yaml               | A file specifying the build for the documentation page using readthedocs.                                                                                 |
-| AutoEpiCollectGUI.py            | The main GUI program used for AutoEpiCollect's epitope selection method. This should be the only pre-installed file that you will open and interact with. |
-| PopCoverageOptimization.java    | This is PCOptim, the program used for optimizing MHC Class I epitope/HLA pairs before population coverage analysis.                                       |
-| CD4PopCoverageOptimization.java | This is PCOptim-CD, the program used for optimizing MHC Class II epitope/HLA pairs before population coverage analysis.                                   |
-| MHCI_HLA_input.txt              | The 27-allele HLA Class I reference set.                                                                                                                  |
-| MHCII_HLA_input.txt             | The 27-allele HLA Class II reference set.                                                                                                                 |
-| environment.yml                 | The .yml file specifying the dependencies used to create the conda virtual environment for AutoEpiCollect.                                                |
-| mkdocs.yml                      | Another file specifying the build for the documentation page.                                                                                             |
-| refactored_trainingset_cd4.csv  | This is the training data used for the MHC Class II scoring function.                                                                                     |
-| refactored_trainingset_cd8.csv  | This is the training data used for the MHC Class I scoring function.                                                                                      |
 
 This is the end of the AutoEpiCollect documentation webpage and user guide. For further questions or persisting 
 issues please contact mvsamudrala@gmail.com
