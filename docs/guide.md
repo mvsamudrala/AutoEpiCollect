@@ -24,6 +24,7 @@ similar to this one pop up.
 ![Labeled GUI for AutoEpiCollect](GUI-home-annotated.png)
 ## Inputting Required Data and Configuring Run Settings
 The numbered boxes in the home screen above show the order of inputs:
+
 1. These two fields are for specifying the gene target. The white box on the left is where you can type in the 
    name of your gene target. AutoEpiCollect will retrieve a FASTA-formatted file of this gene's peptide sequence 
    from UniProt. The button on the right is if you want to input your own FASTA-formatted gene sequence. Simply 
