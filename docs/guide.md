@@ -81,6 +81,10 @@ The numbered boxes in the home screen above show the order of inputs:
 the same research group. Sometime, these websites are down for bug fixes which may cause the web servers to become 
 unreachable. If you see that AutoEpiCollect is failing at these steps in the epitope collection process, 
 please wait up to 48 hours to allow these web servers to come back online.**
+
+**Note: On some Windows machines, AutoEpiCollect cannot export epitope results to .xlsx files when an .xlsx file of 
+the same name is open in Excel. To make sure the program runs smoothly, please close out of the Excel application 
+while AutoEpiCollect is running.**
 ## Output Window and Viewing Final Epitope Results
 ![Output Window](output-page-annotated.png)
 After pressing the submit button, you will be taken to this output window which shows live updates of 
