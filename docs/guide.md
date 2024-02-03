@@ -51,11 +51,11 @@ The numbered boxes in the home screen above show the order of inputs:
    click this button and choose your desired FASTA-formatted file. 
 2. This field specifies how you want your epitope data to be collected. There are two options from the drop-down 
    menu, "Collect New Data" and "Update Existing Data". Choose the "Collect New Data" option if you want to start 
-   the epitope selection process from scratch. Choose the "Update Existing Data" option if you have collected some 
-   epitope data, but want to add to this data with available epitope characteristics not chosen in the past. If you 
-   have selected the "Update Existing Data" option, please click the "Input Existing Class I (or Class II) Data" 
-   button and choose your incomplete data file. Remember that this file must be the **unranked and unfiltered 
-   epitope Excel file** for this option to work. A summary of all the initial and final filenames will be discussed 
+   the epitope selection process from scratch. Choose the "Update Existing Data" option if you have collected 
+   epitope data targeting specific mutations, but want to add more mutations to your final cancer vaccine.
+   If you have selected the "Update Existing Data" option, please click the "Input Existing Class I (or Class II) Data" 
+   button and choose your previous data file with the original point mutations. Remember that this file must be the 
+   **unranked and unfiltered epitope Excel file** for this option to work. A summary of all the initial and final filenames will be discussed 
    down below.
 3. The third field is a drop-down menu asking which MHC Class you would like to collect epitope data from. You can 
    choose to collect Class I, Class II, or Class I and II data.
