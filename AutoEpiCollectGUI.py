@@ -68,7 +68,7 @@ def get_gene_sequence(target_gene):
     gene_button = driver.find_element(By.XPATH, '/html/body/div[1]/div/div/div/main/table/tbody/tr[1]/td[2]/span/a')
     gene_button.click()
 
-    sleep(2)
+    sleep(5)
 
     download_button = driver.find_element(By.XPATH, '/html/body/div[1]/div[1]/div/div/main/div/div[2]/div/button[1]')
     driver.execute_script("arguments[0].scrollIntoView();", download_button)
@@ -853,14 +853,15 @@ class Worker(QThread):
                 existing_df = pd.read_excel(existing, sheet_name=mutation)
                 existing_dict[mutation] = existing_df
                 for cancer in existing_df["Cancers"]:
-                    if cancer not in cancer_mutations_dict.keys():
-                        cancer_mutations_dict[cancer] = [mutation]
-                    elif mutation not in cancer_mutations_dict[cancer]:
-                        cancer_mutations_dict[cancer].append(mutation)
-                    if mutation not in mutations_cancer_dict.keys():
-                        mutations_cancer_dict[mutation] = [cancer]
-                    elif cancer not in mutations_cancer_dict[mutation]:
-                        mutations_cancer_dict[mutation].append(cancer)
+                    if not pd.isna(cancer):
+                        if cancer not in cancer_mutations_dict.keys():
+                            cancer_mutations_dict[cancer] = [mutation]
+                        elif mutation not in cancer_mutations_dict[cancer]:
+                            cancer_mutations_dict[cancer].append(mutation)
+                        if mutation not in mutations_cancer_dict.keys():
+                            mutations_cancer_dict[mutation] = [cancer]
+                        elif cancer not in mutations_cancer_dict[mutation]:
+                            mutations_cancer_dict[mutation].append(cancer)
         existing_dict2 = {}
         if existing2 != "":
             existing_mhcii_wb = openpyxl.load_workbook(existing2)
@@ -868,14 +869,15 @@ class Worker(QThread):
                 existing_df2 = pd.read_excel(existing2, sheet_name=mutation)
                 existing_dict2[mutation] = existing_df2
                 for cancer in existing_df2["Cancers"]:
-                    if cancer not in cancer_mutations_dict.keys():
-                        cancer_mutations_dict[cancer] = [mutation]
-                    elif mutation not in cancer_mutations_dict[cancer]:
-                        cancer_mutations_dict[cancer].append(mutation)
-                    if mutation not in mutations_cancer_dict.keys():
-                        mutations_cancer_dict[mutation] = [cancer]
-                    elif cancer not in mutations_cancer_dict[mutation]:
-                        mutations_cancer_dict[mutation].append(cancer)
+                    if not pd.isna(cancer):
+                        if cancer not in cancer_mutations_dict.keys():
+                            cancer_mutations_dict[cancer] = [mutation]
+                        elif mutation not in cancer_mutations_dict[cancer]:
+                            cancer_mutations_dict[cancer].append(mutation)
+                        if mutation not in mutations_cancer_dict.keys():
+                            mutations_cancer_dict[mutation] = [cancer]
+                        elif cancer not in mutations_cancer_dict[mutation]:
+                            mutations_cancer_dict[mutation].append(cancer)
         if mhc_classes == "I":
             mhc_classes = ["I"]
         elif mhc_classes == "II":
@@ -1737,7 +1739,7 @@ class MainWindow(QMainWindow):
                 else:
                     self.stackedWidget.setCurrentWidget(self.output_page)
                     if self.worker.ready_to_start and not self.worker.is_running:
-                        self.run_auto_epi_collect(gene, self.gene_file, "", "", mutations, immunogenicity, antigenicity,
+                        self.run_auto_epi_collect(gene, self.gene_file, self.existing_data, self.existing_data_2, mutations, immunogenicity, antigenicity,
                                                   allergenicity, aliphatic, gravy, isoelectric, half_life,
                                                   instability, toxicity, ifn, filtering, scoring_function,
                                                   population_coverage, mhc)
