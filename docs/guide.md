@@ -9,6 +9,7 @@ delete or tamper with any of these files as they are needed for AutoEpiCollect t
 |---------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------|
 | docs                            | A folder with the documentation you are reading right now.                                                                                                |
 | immunogenicity                  | A folder with IEDB's MHC Class I immunogenicity tool.                                                                                                     |
+| population_coverage             | A folder with IEDB's Population Coverage Analysis tool.                                                                                                   |
 | .readthedocs.yaml               | A file specifying the build for the documentation page using readthedocs.                                                                                 |
 | AutoEpiCollectGUI.py            | The main GUI program used for AutoEpiCollect's epitope selection method. This should be the only pre-installed file that you will open and interact with. |
 | PopCoverageOptimization.java    | This is PCOptim, the program used for optimizing MHC Class I epitope/HLA pairs before population coverage analysis.                                       |
