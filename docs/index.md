@@ -7,10 +7,10 @@ AutoEpiCollect is a software that uses web-scraping, tools from the Immune Epito
 (IEDB), and machine learning to predict potentially immunogenic neoantigens for any oncogene. 
 
 AutoEpiCollect GUI homepage:
-![GUI for AutoEpiCollect](GUI-home.png)
+![GUI for AutoEpiCollect](home-screen.png)
 
 AutoEpiCollect workflow chart:
-![Logic workflow for AutoEpiCollect program](workflow-chart.png)
+![Logic workflow for AutoEpiCollect program](design-workflow.png)
 
 Please click the tabs above to go through the installation process and use documentation for AutoEpiCollect.
 

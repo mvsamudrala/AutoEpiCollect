@@ -40,7 +40,7 @@ python AutoEpiCollectGUI.py
 ```
 Please be prepared to wait up to 2 minutes for the GUI to open on its first run. You should see a screen 
 similar to this one pop up.
-![Labeled GUI for AutoEpiCollect](GUI-home-annotated.png)
+![Labeled GUI for AutoEpiCollect](homepage-annotated.png)
 ## Inputting Required Data and Configuring Run Settings
 The numbered boxes in the home screen above show the order of inputs:
 
@@ -81,7 +81,7 @@ the same research group. Sometime, these websites are down for bug fixes which m
 unreachable. If you see that AutoEpiCollect is failing at these steps in the epitope collection process, 
 please wait up to 48 hours to allow these web servers to come back online.**
 ## Output Window and Viewing Final Epitope Results
-![Output Window](output-window.png)
+![Output Window](output-page-annotated.png)
 After pressing the submit button, you will be taken to this output window which shows live updates of 
 AutoEpiCollect's progress. During this time, you will be allowed to hit the back button and view what options you 
 have selected, but you cannot restart the epitope selection process until the program is complete or until you close 
