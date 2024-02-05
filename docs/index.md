@@ -9,7 +9,7 @@ AutoEpiCollect GUI homepage:
 ![GUI for AutoEpiCollect](home-screen.png)
 
 AutoEpiCollect workflow chart:
-![Logic workflow for AutoEpiCollect program](design-workflow2.png)
+![Logic workflow for AutoEpiCollect program](design-workflow3.png)
 
 Please click the tabs above to go through the installation process and use documentation for AutoEpiCollect.
 
