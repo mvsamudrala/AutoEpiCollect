@@ -371,12 +371,12 @@ def get_allergenicity_algpred(peptide_list, pf, current_df):
     return current_df
 
 
-def get_allergenicity_netallergen(peptide_list, pf, current_df):
+def get_allergenicity_netallergen(peptide_list, pf, current_df, peptide_fasta):
     input_fasta = pf + ">Epitope119" + "\n" + "TIETLMLLALIAAAA"
 
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome()
     driver.get('https://services.healthtech.dtu.dk/services/NetAllergen-1.0/')
 
     try:
@@ -388,19 +388,23 @@ def get_allergenicity_netallergen(peptide_list, pf, current_df):
 
     sleep(3)
 
-    text_box = driver.find_element(By.XPATH,
-                                   '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
-    driver.execute_script("arguments[0].scrollIntoView();", text_box)
-    text_box.send_keys(input_fasta)
+    # text_box = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
+    # text_box = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[1]/form/table/tbody/tr[1]/td/textarea')
+    # driver.execute_script("arguments[0].scrollIntoView();", text_box)
+    # text_box.send_keys(input_fasta)
+
+    file_box = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[1]/form/table/tbody/tr[1]/td/input')
+    driver.execute_script("arguments[0].scrollIntoView();", file_box)
+    file_box.send_keys(str(peptide_fasta))
 
     sleep(1)
 
-    blast_button = driver.find_element(By.XPATH,
-                                       '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[4]/td/input')
-    driver.execute_script("arguments[0].click();", blast_button)
+    # blast_button = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[4]/td/input')
+    # blast_button = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[1]/form/table/tbody/tr[4]/td/input')
+    # driver.execute_script("arguments[0].click();", blast_button)
 
-    submit_button = driver.find_element(By.XPATH,
-                                        '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
+    # submit_button = driver.find_element(By.XPATH, '/html/body/main/div/div[3]/div/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
+    submit_button = driver.find_element(By.XPATH, '/html/body/div[2]/div[2]/div[1]/form/table/tbody/tr[5]/td/input[1]')
     driver.execute_script("arguments[0].click();", submit_button)
 
     elem = WebDriverWait(driver, 10000).until(
@@ -1037,7 +1041,7 @@ class Worker(QThread):
                         if al:
                             print(f"Obtaining {pm} allergenicity...")
                             self.update_signal.emit(f"Obtaining {pm} allergenicity...\n")
-                            current_df = get_allergenicity_netallergen(peptides, pf, current_df)
+                            current_df = get_allergenicity_netallergen(peptides, pf, current_df, peptide_fasta)
                             print(f"Done obtaining {pm} allergenicity predictions")
                             self.update_signal.emit(f"Done obtaining {pm} allergenicity predictions\n")
                         if t:
