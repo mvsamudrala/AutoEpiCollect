@@ -27,14 +27,19 @@ from sklearn.model_selection import cross_val_score
 from functools import partial
 
 
+# Function to obtain the fasta-formatted gene sequence of interest from UniProt
 def get_gene_sequence(target_gene):
+    #  Instantiates the web scraping tool and accesses UniProt website
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
+    # Headless means that a new Chrome window doesn't pop up, it accesses Chrome in the background
     driver = webdriver.Chrome(options=options)
     driver.get('https://www.uniprot.org/')
 
     sleep(1)
 
+    # Anytime By.XPATH is used, it means using the inspect element button to find the html pointer of a certain button
+    # or text box or text
     search_box = driver.find_element(By.XPATH,
                                      '/html/body/div[1]/div/div/main/div/div[1]/div/section/form/div[2]/input')
     search_box.send_keys(target_gene)
@@ -96,6 +101,7 @@ def get_gene_sequence(target_gene):
         driver.close()
 
 
+# Function to create whole mutant fasta genes from each point mutation of interest
 def make_mutant_genes(mutant_list, gene_seq, parent_dir):
     for m in mutant_list:
         file_out = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
@@ -114,6 +120,8 @@ def make_mutant_genes(mutant_list, gene_seq, parent_dir):
                     print('Error while writing sequence:  ' + seq_record.id)
 
 
+# Function that uses the IEDB Tools API to obtain potential epitopes from the mutant gene fasta files, as well as
+# the binding affinity of the epitopes to MHC I and II molecules
 def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
     if mhc == "I":
         epitopes_dict = {}
@@ -194,6 +202,7 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
     return epitopes_dict
 
 
+# Function that only keeps the mutant epitopes from the list of all potential epitopes
 def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
     if mhc == "I":
         epitopes_dict = {}
@@ -240,6 +249,7 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
     return epitopes_dict
 
 
+# Function that makes .txt and .fasta files of peptides created from each point mutation of interest
 def get_peptides(point_mutants, mut_epitopes_dict, mhc, parent_dir):
     for m in point_mutants:
         file_out = f"{parent_dir}/Sequences/{m}peptides_{mhc}.txt"
@@ -261,6 +271,7 @@ def get_peptides(point_mutants, mut_epitopes_dict, mhc, parent_dir):
                 count += 1
 
 
+# Function that obtains the immunogenicity scores of MHC I peptides using an already downloaded library from the IEDB
 def get_local_immunogenicity_mhci(immunogenicity_file, peptide_file, current_df):
     completed_run = subprocess.run(["python", immunogenicity_file, peptide_file], capture_output=True, text=True)
     output = completed_run.stdout
@@ -275,6 +286,8 @@ def get_local_immunogenicity_mhci(immunogenicity_file, peptide_file, current_df)
     return current_df
 
 
+# Function that obtain the immunogenicity scores of MHC II peptides by webscraping the IEDB website
+# This function is a work in progress as this website is finnicky and slow right now
 def get_immunogenicity_mhcii(peptide_list, p, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
@@ -309,6 +322,8 @@ def get_immunogenicity_mhcii(peptide_list, p, current_df):
     return current_df
 
 
+# Function that obtains the antigenicity scores of both MHC I and II peptides.
+# This function is a work in progress as VaxiJen v2.0 has a human verification loop that is blocking automation
 def get_antigenicity(peptide_list, peptide_fasta, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
@@ -339,6 +354,7 @@ def get_antigenicity(peptide_list, peptide_fasta, current_df):
     return current_df
 
 
+# Function that obtains the allergenicity of MHC class I epitopes using web scraping
 def get_allergenicity_algpred(peptide_list, pf, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
@@ -371,6 +387,7 @@ def get_allergenicity_algpred(peptide_list, pf, current_df):
     return current_df
 
 
+# Function that obtains the allergenicity of MHC Class II epitopes using webscraping
 def get_allergenicity_netallergen(peptide_list, pf, current_df, peptide_fasta):
     input_fasta = pf + ">Epitope119" + "\n" + "TIETLMLLALIAAAA"
 
@@ -423,6 +440,8 @@ def get_allergenicity_netallergen(peptide_list, pf, current_df, peptide_fasta):
     return current_df
 
 
+# Function that access ProtParam and obtains the half-life, instability, aliphatic index, isoelectric point, and
+# GRAVY score of peptides. Only half-life and instability are used for filtering epitopes.
 def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
     for e in peptide_list:
         options = webdriver.ChromeOptions()
@@ -468,6 +487,7 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
     return current_df
 
 
+# Obtains the toxicity of peptides using webscraping
 def get_toxicity(peptide_list, pf, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
@@ -493,6 +513,7 @@ def get_toxicity(peptide_list, pf, current_df):
     return current_df
 
 
+# Obtains the IFN-gamma release of epitopes. IFN-gamma only used for filtering MHC Class II epitopes.
 def get_ifn(peptide_list, pf, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
@@ -522,6 +543,8 @@ def get_ifn(peptide_list, pf, current_df):
     return current_df
 
 
+# Applies a z-score and min-max normalization on immunogenicity, antigenicity, and allergenicity data.
+# Binding affinity data has a log transformation applied to it
 def normalize_data(df_collected_epitopes, mhc):
     immunogenicity_name = "immunogenicity"
     antigenicity_name = "antigenicity"
@@ -570,6 +593,7 @@ def normalize_data(df_collected_epitopes, mhc):
     return df_collected_epitopes
 
 
+# Trains the logistic regression model and uses it for the scoring function. Scores the epitopes and ranks them.
 def apply_scoring_function(df_normalized_epitopes, mhc):
     if mhc == "I":
         training_df = pd.read_csv("refactored_trainingset_cd8.csv")
@@ -594,6 +618,8 @@ def apply_scoring_function(df_normalized_epitopes, mhc):
     return df_normalized_epitopes_ranked
 
 
+# Takes the top 20 epitopes after ranking as been completed and applies the manual filtration
+# using the exclusion criteria.
 def get_filtered_epitopes(df_ranked_epitopes, mhc, scoring, h, ins, t, ifn):
     if scoring:
         top_20_df = df_ranked_epitopes.head(20)
@@ -666,6 +692,7 @@ def get_filtered_epitopes(df_ranked_epitopes, mhc, scoring, h, ins, t, ifn):
     return df_filtered_epitopes.reset_index(drop=True)
 
 
+# Uses PCOptim and PCOptim-CD to obtain the optimized list of filtered epitopes for population coverage analysis.
 def get_optimized_epitopes(df_filtered_epitopes, mhc):
     filtered_epitopes_str = ""
     op_df = pd.DataFrame(columns=df_filtered_epitopes.columns)
@@ -715,6 +742,7 @@ def get_optimized_epitopes(df_filtered_epitopes, mhc):
     return op_df
 
 
+# Helper function to convert the peptide allele list for input into PCOptim and PCOptim-CD
 def convert_to_text(df):
     peptide_allele_dict = {}
     for i in range(df.shape[0]):
@@ -733,6 +761,7 @@ def convert_to_text(df):
     return file_lines
 
 
+# Helper function to run the population coverage analysis tool and generate population coverage graphs
 def population_coverage_helper(pop_filename, reg, mhc, pep_filename, plot_folder, path):
     completed_run = subprocess.run(
         ["python", pop_filename, "-p", reg, "-c", mhc, "-f", pep_filename, "--plot", plot_folder], capture_output=True,
@@ -752,6 +781,8 @@ def population_coverage_helper(pop_filename, reg, mhc, pep_filename, plot_folder
     return df
 
 
+# Function to create and organize files for population coverage analysis. Uses function above to run the
+# population covarage analysis tool that is downloaded.
 def get_population_coverage(df_filtered_epitopes, df_optimized_epitopes, mhc, parent_dir):
     if mhc == "I":
         peptide_allele_filename = f"filtered_epitopes_mhci.txt"
@@ -807,6 +838,7 @@ class Worker(QThread):
     def __init__(self):
         super().__init__()
 
+    # This function is used to call all the functions above and organize the output data
     def auto_epi_collect(self, gene, gene_file, existing, existing2, mut, i, an, al, ali, g, iso, h, ins, t, ifn,
                          filtering, scoring,
                          pop_cov, mhc_classes):
@@ -1287,7 +1319,7 @@ class Worker(QThread):
         self.ready_to_start = True
         self.is_running = False
 
-
+# Don't need to worry about everything below, this is all for the GUI.
 class MainWindow(QMainWindow):
     def __init__(self):
         super().__init__()
