@@ -21,6 +21,8 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as ec
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver import ChromeOptions
+from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
 from sklearn.linear_model import LogisticRegression
 from sklearn.model_selection import KFold
 from sklearn.model_selection import cross_val_score
@@ -33,7 +35,7 @@ def get_gene_sequence(target_gene):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
     # Headless means that a new Chrome window doesn't pop up, it accesses Chrome in the background
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.get('https://www.uniprot.org/')
 
     sleep(1)
@@ -291,7 +293,7 @@ def get_local_immunogenicity_mhci(immunogenicity_file, peptide_file, current_df)
 def get_immunogenicity_mhcii(peptide_list, p, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     driver.get('http://tools.iedb.org/CD4episcore/')
 
     elem = WebDriverWait(driver, 60).until(
@@ -358,7 +360,7 @@ def get_antigenicity(peptide_list, peptide_fasta, current_df):
 def get_allergenicity_algpred(peptide_list, pf, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.get('https://webs.iiitd.edu.in/raghava/algpred2/batch.html')
 
     text_box = driver.find_element(By.XPATH,
@@ -393,7 +395,7 @@ def get_allergenicity_netallergen(peptide_list, pf, current_df, peptide_fasta):
 
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome()
+    driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
     driver.get('https://services.healthtech.dtu.dk/services/NetAllergen-1.0/')
 
     try:
@@ -446,7 +448,7 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
     for e in peptide_list:
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
-        driver = webdriver.Chrome(options=options)
+        driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
         driver.get('https://web.expasy.org/protparam/')
 
         searchbox = driver.find_element(By.XPATH, '//*[@id="sib_body"]/form/textarea')
@@ -491,7 +493,7 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
 def get_toxicity(peptide_list, pf, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.get('https://webs.iiitd.edu.in/raghava/toxinpred/multi_submit.php')
 
     submission_box = driver.find_element(By.XPATH, '//*[@id="input_box"]')
@@ -517,7 +519,7 @@ def get_toxicity(peptide_list, pf, current_df):
 def get_ifn(peptide_list, pf, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.get('https://webs.iiitd.edu.in/raghava/ifnepitope/predict.php')
 
     submission_box = driver.find_element(By.XPATH, '//*[@name="sequence"]')
