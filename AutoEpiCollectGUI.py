@@ -329,7 +329,7 @@ def get_immunogenicity_mhcii(peptide_list, p, current_df):
 def get_antigenicity(peptide_list, peptide_fasta, current_df):
     options = webdriver.ChromeOptions()
     options.add_argument("--headless=new")
-    driver = webdriver.Chrome(options=options)
+    driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
     driver.get('http://www.ddg-pharmfac.net/vaxijen/VaxiJen/VaxiJen.html')
 
     file_box = driver.find_element(By.XPATH, '//input[@type="FILE"]')
