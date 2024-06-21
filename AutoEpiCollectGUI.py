@@ -448,7 +448,7 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
     for e in peptide_list:
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
-        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
         driver.get('https://web.expasy.org/protparam/')
 
         # searchbox = driver.find_element(By.XPATH, '//*[@id="sib_body"]/form/textarea')
@@ -463,21 +463,16 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
         results = driver.find_element(By.XPATH, '/html/body/main/div/pre[2]').text
         pi = results[
              results.find('Theoretical pI: ') + 16:results.find('\n', results.find('Theoretical pI: ') + 16, -1)]
-        print(pi)
         half_life = results[results.find('The estimated half-life is: ') + 28:results.find('hours', results.find(
             'The estimated half-life is: ') + 28, -1) - 1]
-        print(half_life)
         instability = results[results.find('The instability index (II) is computed to be ') + 45:results.find('\n',
                                                                                                               results.find(
                                                                                                                   'The instability index (II) is computed to be ') + 45,
                                                                                                               -1)]
-        print(instability)
         alipathy = results[
                    results.find('Aliphatic index: ') + 17:results.find('\n', results.find('Aliphatic index: ') + 17,
                                                                        -1)]
-        print(alipathy)
         gravy = results[results.find('Grand average of hydropathicity (GRAVY):') + 40:]
-        print(gravy)
 
         if h:
             if ">" not in half_life:
