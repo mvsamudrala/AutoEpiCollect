@@ -17,5 +17,5 @@ dependencies:
   - pip:
       - pyqt5
       - selenium==4.11.2
-      - webdriver-manager
+      - chromedriver-autoinstaller
 
