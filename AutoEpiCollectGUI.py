@@ -455,7 +455,7 @@ def get_protparam(peptide_list, h, ins, ali, iso, g, current_df):
         options = webdriver.ChromeOptions()
         options.add_argument("--headless=new")
         # driver = webdriver.Chrome(options=options, service=ChromeService(ChromeDriverManager().install()))
-        driver = webdriver.Chrome()
+        driver = webdriver.Chrome(options=options)
         driver.get('https://web.expasy.org/protparam/')
 
         # searchbox = driver.find_element(By.XPATH, '//*[@id="sib_body"]/form/textarea')
