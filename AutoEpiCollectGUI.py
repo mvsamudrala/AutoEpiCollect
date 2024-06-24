@@ -382,7 +382,7 @@ def get_allergenicity_algpred(peptide_list, pf, current_df):
                                          '/html/body/header/div[3]/section/form/table/tbody/tr/td/font/font/p[3]/font/font[2]/input[2]')
     submit_button[0].click()
 
-    elem = WebDriverWait(driver, 30).until(
+    elem = WebDriverWait(driver, 120).until(
         ec.presence_of_element_located((By.XPATH, '/html/body/header/div[3]/main/h1/strong/font/b')))
 
     for x in range(len(peptide_list)):
