@@ -253,7 +253,7 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
     return epitopes_dict
 
 
-# Function that makes .txt and .fasta files of peptides created from each point mutation of interest
+# Function that makes .txt and .fasta files of peptides created from each point mutation of interest, test
 def get_peptides(point_mutants, mut_epitopes_dict, mhc, parent_dir):
     for m in point_mutants:
         file_out = f"{parent_dir}/Sequences/{m}peptides_{mhc}.txt"
