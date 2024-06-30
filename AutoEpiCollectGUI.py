@@ -130,18 +130,24 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
     if mhc == "I":
         epitopes_dict = {}
         for m in mutant_list:
-            sequence = ""
+            target_sequence = ""
             epitope_lengths = ""
             fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = str(seq_record.seq)
+                loc = m[:-1]
+                loc = loc[1:]
+                loc = int(loc) - 1
+                # target_sequence = sequence[loc - 19:loc] + sequence[loc:loc + 20]
+                target_sequence = sequence[max(0, loc - 19): min(len(sequence), loc + 20)]
+                print(target_sequence)
                 with open("MHCI_HLA_input.txt", "r") as h:
                     alleles = h.read() * 2
                     alleles = alleles[:-1]
                 epitope_lengths = "9," * 27 + "10," * 26 + "10"
 
             mhc_i = subprocess.run(["curl", "--data",
-                                    f'method=netmhcpan_ba&sequence_text={sequence}&allele={alleles}&length={epitope_lengths}',
+                                    f'method=netmhcpan_ba&sequence_text={target_sequence}&allele={alleles}&length={epitope_lengths}',
                                     "http://tools-cluster-interface.iedb.org/tools_api/mhci/"], capture_output=True,
                                    text=True)
             output = mhc_i.stdout
@@ -168,18 +174,24 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
     else:
         epitopes_dict = {}
         for m in mutant_list:
-            sequence = ""
+            target_sequence = ""
             epitope_lengths = ""
             fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = str(seq_record.seq)
+                loc = m[:-1]
+                loc = loc[1:]
+                loc = int(loc) - 1
+                # target_sequence = sequence[loc - 49:loc] + sequence[loc:loc + 50]
+                target_sequence = sequence[max(0, loc - 49): min(len(sequence), loc + 50)]
+                print(target_sequence)
                 with open("MHCII_HLA_input.txt", "r") as h:
                     alleles = h.read()
                     alleles = alleles[:-1]
                 epitope_lengths = "15," * 26 + "15"
 
             mhc_ii = subprocess.run(["curl", "--data",
-                                     f'method=netmhciipan&sequence_text={sequence}&allele={alleles}&length={epitope_lengths}',
+                                     f'method=netmhciipan&sequence_text={target_sequence}&allele={alleles}&length={epitope_lengths}',
                                      "http://tools-cluster-interface.iedb.org/tools_api/mhcii/"],
                                     capture_output=True, text=True)
             output = mhc_ii.stdout
@@ -218,13 +230,21 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
                 loc = m[:-1]
                 loc = loc[1:]
                 loc = int(loc) - 1
-                target_epitope = sequence[loc - 9:loc] + sequence[loc:loc + 10]
+                start_index = max(0, loc - 9)
+                end_index = min(len(sequence), loc + 10)
+                target_epitope = sequence[start_index:loc] + sequence[loc:end_index]
                 print(m + ": " + target_epitope)
                 index = 0
                 bad_epitopes_indexes = []
+                loc += 1
                 for pep in df["peptide"]:
-                    if pep not in target_epitope or df["start"][index] == loc + 2 or df["end"][index] == loc:
+                    start_index = sequence.find(pep) + 1
+                    end_index = start_index + len(pep) - 1
+                    if pep not in target_epitope or not start_index <= loc <= end_index:
+                    # if pep not in target_epitope:
                         bad_epitopes_indexes.append(index)
+                    else:
+                        print(f"{pep}, {start_index}, {end_index}")
                     index += 1
                 df_dropped = df.drop(bad_epitopes_indexes).reset_index(drop=True)
                 epitopes_dict[m] = df_dropped.reset_index(drop=True)
@@ -233,21 +253,31 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
         for m in mutant_list:
             fasta_file = parent_dir / "mutant_gene_fastas" / f"{m}.fasta"
             df = all_epitopes_dict[m].copy()
+            # print(f"hello: {df['peptide']}")
             for seq_record in SeqIO.parse(open(fasta_file, mode='r'), 'fasta'):
                 sequence = seq_record.seq
                 loc = m[:-1]
                 loc = loc[1:]
                 loc = int(loc) - 1
-                target_epitope = sequence[loc - 14:loc] + sequence[loc:loc + 15]
+                # print(loc)
+                start_index = max(0, loc - 14)
+                end_index = min(len(sequence), loc + 15)
+                target_epitope = sequence[start_index:loc] + sequence[loc:end_index]
                 print(m + ": " + target_epitope)
                 bad_epitopes_indexes = []
                 loc += 1
                 for i in range(df.shape[0]):
-                    start_index = int(df["start"][i])
-                    end_index = int(df["end"][i])
+                    # start_index = int(df["start"][i])
+                    # end_index = int(df["end"][i])
                     pep = df["peptide"][i]
+                    start_index = sequence.find(pep) + 1
+                    end_index = start_index + len(pep) - 1
                     if pep not in target_epitope or not start_index <= loc <= end_index:
+                    # if pep not in target_epitope:
                         bad_epitopes_indexes.append(i)
+                    else:
+                        print(f"{pep}, {start_index}, {end_index}")
+                # print(bad_epitopes_indexes)
                 df_dropped = df.drop(bad_epitopes_indexes).reset_index(drop=True)
                 epitopes_dict[m] = df_dropped
     return epitopes_dict
@@ -303,6 +333,7 @@ def get_immunogenicity_mhcii(peptide_list, p, current_df):
         ec.presence_of_element_located((By.XPATH, '/html/body/div[3]/form/table/tbody/tr[3]/td[2]/textarea')))
 
     searchbox = driver.find_element(By.XPATH, '/html/body/div[3]/form/table/tbody/tr[3]/td[2]/textarea')
+    print(p)
     searchbox.send_keys(p)
 
     sleep(1)
