@@ -152,6 +152,7 @@ def get_epitopes_ba(mutant_list, mhc, parent_dir, update):
                                    text=True)
             output = mhc_i.stdout
             table = StringIO(output)
+            # print(table)
             df = pd.read_table(table, sep=r"\s+")
             df = df.rename(columns={"ic50": "binding affinity (nM)"})
             column_titles = ["allele", "seq_num", "start", "end", "length", "peptide", "core", "icore",
@@ -238,14 +239,18 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
                 bad_epitopes_indexes = []
                 loc += 1
                 for pep in df["peptide"]:
-                    start_index = sequence.find(pep) + 1
+                    # print(pep)
+                    start_index = sequence.find(pep, loc - 11) + 1
+                    # print(start_index)
                     end_index = start_index + len(pep) - 1
+                    # print(end_index)
                     if pep not in target_epitope or not start_index <= loc <= end_index:
                     # if pep not in target_epitope:
                         bad_epitopes_indexes.append(index)
                     else:
                         print(f"{pep}, {start_index}, {end_index}")
                     index += 1
+                # print(bad_epitopes_indexes)
                 df_dropped = df.drop(bad_epitopes_indexes).reset_index(drop=True)
                 epitopes_dict[m] = df_dropped.reset_index(drop=True)
     else:
@@ -270,8 +275,10 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
                     # start_index = int(df["start"][i])
                     # end_index = int(df["end"][i])
                     pep = df["peptide"][i]
-                    start_index = sequence.find(pep) + 1
+                    start_index = sequence.find(pep, loc - 16) + 1
+                    # print(start_index)
                     end_index = start_index + len(pep) - 1
+                    # print(end_index)
                     if pep not in target_epitope or not start_index <= loc <= end_index:
                     # if pep not in target_epitope:
                         bad_epitopes_indexes.append(i)
