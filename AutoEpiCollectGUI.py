@@ -240,15 +240,15 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
                 loc += 1
                 for pep in df["peptide"]:
                     # print(pep)
-                    start_index = sequence.find(pep, loc - 11) + 1
+                    current_start_index = sequence.find(pep, loc - 10) + 1
                     # print(start_index)
-                    end_index = start_index + len(pep) - 1
+                    current_end_index = current_start_index + len(pep) - 1
                     # print(end_index)
-                    if pep not in target_epitope or not start_index <= loc <= end_index:
+                    if pep not in target_epitope or not current_start_index <= loc <= current_end_index:
                     # if pep not in target_epitope:
                         bad_epitopes_indexes.append(index)
                     else:
-                        print(f"{pep}, {start_index}, {end_index}")
+                        print(f"{pep}, {current_start_index}, {current_end_index}")
                     index += 1
                 # print(bad_epitopes_indexes)
                 df_dropped = df.drop(bad_epitopes_indexes).reset_index(drop=True)
@@ -267,6 +267,8 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
                 # print(loc)
                 start_index = max(0, loc - 14)
                 end_index = min(len(sequence), loc + 15)
+                # print(start_index)
+                # print(end_index)
                 target_epitope = sequence[start_index:loc] + sequence[loc:end_index]
                 print(m + ": " + target_epitope)
                 bad_epitopes_indexes = []
@@ -275,15 +277,17 @@ def get_mutant_epitopes(mutant_list, mhc, all_epitopes_dict, parent_dir):
                     # start_index = int(df["start"][i])
                     # end_index = int(df["end"][i])
                     pep = df["peptide"][i]
-                    start_index = sequence.find(pep, loc - 16) + 1
-                    # print(start_index)
-                    end_index = start_index + len(pep) - 1
-                    # print(end_index)
-                    if pep not in target_epitope or not start_index <= loc <= end_index:
+                    # print(pep)
+                    # print(loc)
+                    current_start_index = sequence.find(pep, loc - 15) + 1
+                    # print(current_start_index)
+                    current_end_index = current_start_index + len(pep) - 1
+                    # print(current_end_index)
+                    if pep not in target_epitope or not current_start_index <= loc <= current_end_index:
                     # if pep not in target_epitope:
                         bad_epitopes_indexes.append(i)
                     else:
-                        print(f"{pep}, {start_index}, {end_index}")
+                        print(f"{pep}, {current_start_index}, {current_end_index}")
                 # print(bad_epitopes_indexes)
                 df_dropped = df.drop(bad_epitopes_indexes).reset_index(drop=True)
                 epitopes_dict[m] = df_dropped
